@@ -42,9 +42,9 @@ def figure_qa_plotting_style(data, qa_pairs, return_qa=True, verbose=True,
     ### persona of assistant
     text_persona = persona(text=text_persona)
     # context for question
-    text_context = 'Assuming this is a figure made with matplotlib in Python, what is the plot style used?  Examples of plotting styles are "classic" or "ggplot". Examples of plotting styles are "classic" or "ggplot".' # full figure but context
+    text_context = 'Assume this is a figure made with matplotlib in Python.  Examples of plotting styles are "classic" or "ggplot". Examples of plotting styles are "classic" or "ggplot".' # full figure but context
 
-    text_question = 'What is the plot style used?'
+    text_question = 'What is the plot style used in this figure?'
     text_format = 'Please format the output as a json as {"plot style":""} to store the matplotlib plotting style used in the figure.'
     answer = {"plot style":data['figure']['plot style']}
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
@@ -63,3 +63,43 @@ def figure_qa_plotting_style(data, qa_pairs, return_qa=True, verbose=True,
 
 
 
+
+# Colormaps?
+def figure_qa_colormap(data, qa_pairs, return_qa=True, verbose=True, 
+                       text_persona = None):
+    
+    ### persona of assistant
+    text_persona = persona(text=text_persona)
+    # context for question
+    text_context = 'Assume this is a figure made with matplotlib in Python. Examples of matplotlib colormaps are "rainbow" or "Reds".' # full figure but context
+
+    text_question = 'What is the colormap that was used in this figure?'
+    text_format = 'Please format the output as a json as {"colormap":""} to store the matplotlib colormap used in the figure.'
+    answer = {"colormap":data['figure']['color map']}
+    q = text_persona + " " + text_context + " " + text_question + " " + text_format
+    if verbose:
+        print('QUESTION:', text_question)
+        print('ANSWER:', answer)
+        print('')
+    # add to pairs
+    if return_qa: 
+        qa_pairs['Level 1']['Figure-level questions']['plot style'] = {'Q':q, 'A':answer, 
+                                                                         'persona':text_persona, 
+                                                                         'context':text_context, # context nothing for full figure
+                                                                         'question':text_question,
+                                                                         'format':text_format, 
+                                                                         'notes':"Some of the plot styles don't allow for updates to the colormap for REASONS, so just keep that in mind."}
+
+
+    # q2 = 'Assuming this is a figure made with matplotlib in Python, what is the colormap that was used?  Examples of matplotlib colormaps are "rainbow" or "Reds".'
+    # q2 += ' You are a helpful assistant, please format the output as a json as {"colormap":""} to store the matplotlib colormap used in the figure.'
+    # a2 = {"colormap":data['figure']['color map']}
+    # if verbose:
+    #     print('QUESTION:', q2)
+    #     print('ANSWER:', a2)
+    #     print('')
+    # # add to pairs
+    # if return_qa: 
+    #     qa_pairs['Level 1']['Figure-level questions']['colormap'] = {'Q':q2, 'A':a2, 
+    #                                                              'notes':"Some of the plot styles don't allow for updates to the colormap for REASONS, so just keep that in mind."}
+        return qa_pairs

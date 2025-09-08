@@ -51,20 +51,6 @@ def log_scale_ax(scale_exp = {'min':0.01, 'max':5.0},
 
 
 
-# Colormaps?
-def q3(data, qa_pairs, return_qa=True, verbose=True):
-    q2 = 'Assuming this is a figure made with matplotlib in Python, what is the colormap that was used?  Examples of matplotlib colormaps are "rainbow" or "Reds".'
-    q2 += ' You are a helpful assistant, please format the output as a json as {"colormap":""} to store the matplotlib colormap used in the figure.'
-    a2 = {"colormap":data['figure']['color map']}
-    if verbose:
-        print('QUESTION:', q2)
-        print('ANSWER:', a2)
-        print('')
-    # add to pairs
-    if return_qa: 
-        qa_pairs['Level 1']['Figure-level questions']['colormap'] = {'Q':q2, 'A':a2, 
-                                                                 'notes':"Some of the plot styles don't allow for updates to the colormap for REASONS, so just keep that in mind."}
-        return qa_pairs
 
 
 # aspect ratio
