@@ -7,7 +7,7 @@ import numpy as np
 ############ FIGURES IN GENERAL ##############
 
 # plot index to words
-n_to_word = {0:'first', 1:'second', 2:'third', 3:'fourth', 4:'fifth', 5:'sixth', 6:'seventh', 7:'eigth', 8:'ninth', 9:'tenth'}
+n_to_word = {0:'first', 1:'second', 2:'third', 3:'fourth', 4:'fifth', 5:'sixth', 6:'seventh', 7:'eighth', 8:'ninth', 9:'tenth'}
 # ... for the plot in the [] panel...
 def plot_index_to_words(pind):
     y = pind[0] # row
@@ -45,34 +45,10 @@ def log_scale_ax(scale_exp = {'min':0.01, 'max':5.0},
 
 
 
-# How many panels in the figure?
-def q1(data, qa_pairs, return_qa=True, verbose=True):
-    q1 = 'How many panels are in this figure?'
-    q1 += ' You are a helpful assistant, please format the output as a json as {"nrows":"", "ncols":""} to store the number of rows and columns.'
-    a1 = {"nrows":data['figure']['nrows'], "ncols":data['figure']['ncols']}
-    if verbose:
-        print('QUESTION:', q1)
-        print('ANSWER:', a1)
-        print('')
-    # add to pairs
-    if return_qa: 
-        qa_pairs['Level 1']['Figure-level questions']['rows/columns'] = {'Q':q1, 'A':a1}
-        return qa_pairs
 
 
-# Plotting style?
-def q2(data, qa_pairs, return_qa=True, verbose=True):
-    q2 = 'Assuming this is a figure made with matplotlib in Python, what is the plot style used?  Examples of plotting styles are "classic" or "ggplot".'
-    q2 += ' You are a helpful assistant, please format the output as a json as {"plot style":""} to store the matplotlib plotting style used in the figure.'
-    a2 = {"plot style":data['figure']['plot style']}
-    if verbose:
-        print('QUESTION:', q2)
-        print('ANSWER:', a2)
-        print('')
-    # add to pairs
-    if return_qa: 
-        qa_pairs['Level 1']['Figure-level questions']['plot style'] = {'Q':q2, 'A':a2}
-        return qa_pairs
+
+
 
 
 # Colormaps?
@@ -294,7 +270,7 @@ def context(nrow, ncol, plot_index = [0,0],
     return q
 
 
-##### FEEDER FUNCTIONS ######
+##### FEEDER FUNCTIONS (NEW) ######
 
 def get_adder(nplots, use_words):
     if use_words and nplots > 1:
