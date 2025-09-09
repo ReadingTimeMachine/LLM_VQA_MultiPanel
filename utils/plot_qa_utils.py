@@ -62,22 +62,6 @@ def dpi(data, qa_pairs, return_qa=True, verbose=True):
 
 
 
-############ INDIVIDUAL PLOTS IN GENERAL ##############
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ############### ROUND 2 ---- BETTER QA ###############
 
 def get_nplots(data):
@@ -98,7 +82,7 @@ def persona(text=None):
         text = 'You are a helpful assistant that can analyze images.'
     return text
 
-def context(nrow, ncol, plot_index = [0,0], 
+def context(nrow, ncol, plot_index = [0,0],  
             use_words=True, single_figure_flag=True):
     """
     This sets the context of the question by flagging what panel of 
@@ -127,6 +111,23 @@ def context(nrow, ncol, plot_index = [0,0],
     if nrow == ncol and nrow == 0 and single_figure_flag: # just use one plot
         q = ''
     return q
+
+
+def context_single_multi(data, nplots, plot_num, use_words, single_figure_flag):
+    if nplots == 1 and single_figure_flag:
+        text_context = context(0, 0, use_words=use_words,
+                                single_figure_flag=single_figure_flag)
+    else:
+        nrow = data['figure']['plot indexes'][plot_num][0]
+        ncol = data['figure']['plot indexes'][plot_num][1]
+        # ncols = data['figure']['ncols']
+        # nrows = data['figure']['nrows']
+        pindex = data['figure']['plot indexes'][plot_num]
+        #print('nrow, ncol, pindex', nrow,ncol,pindex)
+        text_context = context(nrow,ncol,plot_index=pindex, 
+                               use_words=use_words, 
+                               single_figure_flag=False)
+    return text_context
 
 
 ##### FEEDER FUNCTIONS (NEW) ######
