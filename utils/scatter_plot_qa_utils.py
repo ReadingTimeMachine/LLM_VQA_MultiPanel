@@ -1,12 +1,10 @@
 import numpy as np
 
-#from utils.plot_qa_utils import plot_index_to_words
-
-#q_gmm_ngaussians_hists
+### JPN -- these all need to be cleaned!
 
 
 
-from .plot_qa_utils import get_nplots, persona, context, how_many, how_much_data_values#, check_relationship
+from .plot_qa_utils import get_nplots, persona, context_single_multi, how_many, how_much_data_values, get_adder
 
 
 
@@ -33,23 +31,13 @@ def q_npoints_scatter_plot_plotnums(data, qa_pairs, plot_num = [0,0],
     ### persona of assistant
     text_persona = persona(text=text_persona)
     ## context for question
-    if nplots == 1 and single_figure_flag:
-        text_context = context(0, 0, use_words=use_words,
-                                single_figure_flag=single_figure_flag)
-    else:
-        nrow = data['figure']['plot indexes'][plot_num][0]
-        ncol = data['figure']['plot indexes'][plot_num][1]
-        pindex = data['figure']['plot indexes'][plot_num]
-        text_context = context(nrow,ncol,plot_index=pindex, use_words=use_words)
+    text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
 
     ### question, format of output
     text_question, adder, text_format = how_many(object, big_tag, 
                                                        val_type = 'an integer', 
                                                        nplots = nplots, 
                                                        use_words=use_words)
-    # check adder
-    # if adder != '':
-    #     adder = adder
     # construct question:
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     # get answer, formatted
