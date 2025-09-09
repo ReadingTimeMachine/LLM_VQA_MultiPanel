@@ -6,7 +6,7 @@ import numpy as np
 
 
 
-from .plot_qa_utils import get_nplots, persona, context_single_multi, how_many, how_much_data_values#, check_relationship
+from .plot_qa_utils import get_nplots, persona, context_single_multi, how_many, how_much_data_values, get_adder
 
 
 
@@ -177,7 +177,7 @@ def q_relationship_lines(data, qa_pairs, plot_num = 0,
                                                               val_type=val_type, 
                                                               use_words=use_words, 
                                                               along_an_axis=False,
-                                                              for_each=for_each)
+                                                              for_each=for_each, use_list=use_list)
     
     ### persona of assistant
     text_persona = persona(text=text_persona)
@@ -209,22 +209,22 @@ def q_relationship_lines(data, qa_pairs, plot_num = 0,
         if dist == 'gmm': dist = 'gaussian mixture model'
         la.append(dist) # note: assumes same for all!
     #a = la
-    a = {big_tag + ' ' + adder:la}
+    a = {big_tag + adder:la}
 
     if verbose:
         print('QUESTION:', q)
         print('ANSWER:', a)
     if return_qa: 
-        if big_tag + ' ' + adder not in qa_pairs['Level 3']['Plot-level questions']:
-            #print('yes', big_tag_short + ' ' + adder)
-            qa_pairs['Level 3']['Plot-level questions'][big_tag + ' ' + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
+        if big_tag + adder not in qa_pairs['Level 3']['Plot-level questions']:
+            #print('yes', big_tag_short + adder)
+            qa_pairs['Level 3']['Plot-level questions'][big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
                                                                                                               'note':'this currently assumes all elements on a single plot have the same relationship type', 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
                                                                                                         'format':text_format}}
         else:
-            qa_pairs['Level 3']['Plot-level questions'][big_tag + ' ' + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
+            qa_pairs['Level 3']['Plot-level questions'][big_tag + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
                                                                                                               'note':'this currently assumes all elements on a single plot have the same relationship type', 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
@@ -255,33 +255,35 @@ def q_colors_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=True,
             #if 'plot params' in v['data from plot']:
             for c in v['data from plot']['plot params']['colors']:
                 la.append(c[0]) # the "0" here is because, in theory, the line could be made up of more than one color
-    answer = {big_tag + ' ' + adder:{'plot'+str(plot_num):la}} 
-
-    # ------ don't have to change much below ------
     # get nplots    
     nplots = get_nplots(data)
+    adder = get_adder(nplots, use_words)
+    answer = {big_tag + adder:{'plot'+str(plot_num):la}} 
+
+    # ------ don't have to change much below ------
+
     ### persona of assistant
     text_persona = persona(text=text_persona)
     ## context for question
     text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
     if text_context != '':
         print('CONTEXT:', text_context)
-    if use_words:
-        adder = '(words)'
+    # if use_words:
+    #     adder = '(words)'
     # all together
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
         print('QUESTION:', q)
         print('ANSWER:', answer)
     if return_qa: 
-        if big_tag + ' ' + adder not in qa_pairs['Level 1']['Plot-level questions']:
-            qa_pairs['Level 1']['Plot-level questions'][big_tag + ' ' + adder] = {'plot'+str(plot_num):{'Q':q, 'A':answer, 
+        if big_tag + adder not in qa_pairs['Level 1']['Plot-level questions']:
+            qa_pairs['Level 1']['Plot-level questions'][big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':answer, 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
                                                                                                         'format':text_format}}
         else:
-            qa_pairs['Level 1']['Plot-level questions'][big_tag + ' ' + adder]['plot'+str(plot_num)] = {'Q':q, 'A':answer, 
+            qa_pairs['Level 1']['Plot-level questions'][big_tag + adder]['plot'+str(plot_num)] = {'Q':q, 'A':answer, 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
@@ -301,22 +303,22 @@ def q_linestyles_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=T
     
     big_tag = 'line styles'
     plot_param_tag = 'linestyles'
-    adder_adder = ''; text_context_adder = ''
+    text_context_adder = ''
     ### question
     text_question = 'What are the matplotlib linestyles in this figure panel?'
     ### format
     text_format = 'Please format the output as a json as {"line styles":[]}, where each element of the list refers to the'
     text_format += ' linestyle of each line in the figure panel in the form a matplotlib linestyle type.'
     if use_list:
-        adder_adder = ' + list'
+        #adder_adder = ' + list'
         text_context_adder = ' Please choose each linestyle from the following list: ['
         for pt in linestyle_list:
             text_context_adder += pt + ', '
         text_context_adder = text_context_adder[:-2] # take off the last bit
         text_context_adder += '].'
-    if use_words:
-        adder = 'words' + adder_adder
-        adder = '(' + adder + ')'
+    # if use_words:
+    #     adder = 'words' + adder_adder
+    #     adder = '(' + adder + ')'
     # answer
     la = []
     for k,v in data.items():
@@ -324,7 +326,9 @@ def q_linestyles_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=T
             #if 'plot params' in v['data from plot']:
             for c in v['data from plot']['plot params'][plot_param_tag]:
                 la.append(c[0]) # the "0" here is because, in theory, the line could be made up of more than one color
-    answer = {big_tag + ' ' + adder:{'plot'+str(plot_num):la}} 
+    nplots = get_nplots(data)
+    adder = get_adder(nplots, use_words,use_list=use_list)
+    answer = {big_tag + adder:{'plot'+str(plot_num):la}} 
 
     # ------ don't have to change much below ------
     # get nplots    
@@ -343,14 +347,14 @@ def q_linestyles_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=T
         print('QUESTION:', q)
         print('ANSWER:', answer)
     if return_qa: 
-        if big_tag + ' ' + adder not in qa_pairs['Level 1']['Plot-level questions']:
-            qa_pairs['Level 1']['Plot-level questions'][big_tag + ' ' + adder] = {'plot'+str(plot_num):{'Q':q, 'A':answer, 
+        if big_tag + adder not in qa_pairs['Level 1']['Plot-level questions']:
+            qa_pairs['Level 1']['Plot-level questions'][big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':answer, 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
                                                                                                         'format':text_format}}
         else:
-            qa_pairs['Level 1']['Plot-level questions'][big_tag + ' ' + adder]['plot'+str(plot_num)] = {'Q':q, 'A':answer, 
+            qa_pairs['Level 1']['Plot-level questions'][big_tag +  adder]['plot'+str(plot_num)] = {'Q':q, 'A':answer, 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
@@ -358,21 +362,100 @@ def q_linestyles_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=T
         return qa_pairs
 
 
-#### JPN: maybe add "q_linethickness_lines"
-
-#### JPN: maybe add "q_linemarkers_lines"
-
-#### JPN: maybe add "q_linemarkersize_lines"
-
-### HERE ###
-def q_datapoints_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=True, 
-                      line_list = [], verbose=True):
+####### L3 ########
+def q_relationship_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=True, use_list=True, use_nlines = True,
+                        line_list = ['random','linear','gaussian mixture model'], verbose=True, 
+                        single_figure_flag=True, text_persona=None):
     """
     use_words : set to True to translate row, column to words; False will use C-ordering indexing
-    use_list : use a list of "property" options for prompting
+    use_list : give a list of possible distributions
+    use_nplots : give the number of lines in the prompt
     """
-    big_tag = 'data values'
+
+    big_tag = 'relationship'
+
+    nplots = get_nplots(data)
+    adder = get_adder(nplots, use_words,use_list=use_list, use_nlines=use_nlines)
+    ### question
+    text_question = 'What is the functional relationship between the x and y values in this figure panel?'
+    ### format
+    text_format = 'Please format the output as a json as {"relationship":[]} where each element of the list corresponds to a single line in the figure.'
+    ### persona of assistant
+    text_persona = persona(text=text_persona)
+    ## context for question
+    text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
+    # if mention number of lines
+    if use_nlines:
+        text_context += ' Please note that there are a total of ' + str(int(len(data['plot' + str(plot_num)]['data']['ys']))) + ' lines in this plot, so the list should have a '
+        text_context += 'total of ' +str(int(len(data['plot' + str(plot_num)]['data']['ys'])))+ ' entries. '
+    # if use list of options
+    if use_list:
+        text_context += 'Please choose each '+big_tag+' for each line from the following list for each line: ['
+        for pt in line_list:
+            text_context += pt + ', '
+        text_context = text_context[:-2] # take off the last bit
+        text_context += '].'
+    if text_context != '' and verbose:
+        print('CONTEXT:', text_context)
+    # answer
+    la = []
+    for i in range(len(data['plot' + str(plot_num)]['data']['ys'])):
+        dist = data['plot'+str(plot_num)]['distribution']
+        # to match
+        if dist == 'gmm': dist = 'gaussian mixture model'
+        la.append(dist) # note: assumes same for all!
+    #a = la
+    a = {big_tag + adder:la}
+    q = text_persona + " " + text_context + " " + text_question + " " + text_format
+
+    if verbose:
+        print('QUESTION:', q)
+        print('ANSWER:', a)
+    if return_qa: 
+        if big_tag + adder not in qa_pairs['Level 3']['Plot-level questions']:
+            #print('yes', big_tag_short + ' ' + adder)
+            qa_pairs['Level 3']['Plot-level questions'][big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
+                                                                                                              'note':'this currently assumes all elements on a single plot have the same relationship type', 
+                                                                                                        'persona':text_persona, 
+                                                                                                        'context':text_context,
+                                                                                                        'question':text_question, 
+                                                                                                        'format':text_format}}
+        else:
+            qa_pairs['Level 3']['Plot-level questions'][big_tag + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
+                                                                                                              'note':'this currently assumes all elements on a single plot have the same relationship type', 
+                                                                                                        'persona':text_persona, 
+                                                                                                        'context':text_context,
+                                                                                                        'question':text_question, 
+                                                                                                        'format':text_format}
+        return qa_pairs
+
+
+    # answer
+    la = []
+    for k,v in data.items():
+        if 'plot' + str(plot_num) == k: # is a plot
+            #if 'plot params' in v['data from plot']:
+            for c in v['data from plot']['plot params'][plot_param_tag]:
+                la.append(c[0]) # the "0" here is because, in theory, the line could be made up of more than one color
+    nplots = get_nplots(data)
+    adder = get_adder(nplots, use_words,use_list=use_list)
+    answer = {big_tag + adder:{'plot'+str(plot_num):la}} 
+
+    # ------ don't have to change much below ------
+    # get nplots    
+    nplots = get_nplots(data)
+    ### persona of assistant
+    text_persona = persona(text=text_persona)
+    ## context for question
+    text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
+    text_context += text_context_adder
+    if text_context != '' and verbose:
+        print('CONTEXT:', text_context)
+
+##### HERE
+    
     # how many plots
+    big_tag_short = 'relationship'
     nplots = 0
     for k,v in data.items(): # count number of plots
         if 'plot' in k:
@@ -389,27 +472,46 @@ def q_datapoints_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words=T
         adder = '(words)'
 
     if nplots == 1: # single plot
-        q = 'What are the data values in this figure? '
+        q = 'What is the functional relationship between the x and y values in this figure? '
     else:
         if not use_words:
-            q += 'What are the data values for the figure panel on row number ' + str(nrow) + ' and column number ' + str(ncol) + '? '
+            q += 'What is the functional relationship between the x and y values for the figure panel on row number ' + str(nrow) + ' and column number ' + str(ncol) + '? '
         else:
-            q = 'What are the data values for the plot in the ' + plot_index_to_words(data['figure']['plot indexes'][plot_num]) + ' panel? '     
+            q = 'What is the functional relationship between the x and y values for the plot in the ' + plot_index_to_words(data['figure']['plot indexes'][plot_num]) + ' panel? '     
 
-    q += 'You are a helpful assistant, please format the output as a json as {"x":[], "y":[]} where the values of "x" and "y" are the '
-    q += 'data values used to create the plot.  '
-    q += 'If there is one single array for x data values for all lines on the plot, "x" will be a single list, otherwise it will be a list of lists. '
-    q += 'If there is one single array for y data values for all lines on the plot, "y" will be a single list, otherwise it will be a list of lists. '
-    
-    # get answer list
-    la = {"x":data['plot'+str(plot_num)]['data']['xs'], "y":data['plot'+str(plot_num)]['data']['ys']}
-    a = {big_tag + ' ' + adder:{'plot'+str(plot_num):la}} 
+    q += 'You are a helpful assistant, please format the output as a json as {"relationship":[]} where each element of the list corresponds to a single line in the figure. '
+    if use_nlines:
+        adder = adder.split(')')[0] + ' + nlines)'
+        q += 'Please note that there are a total of ' + str(int(len(data['plot' + str(plot_num)]['data']['ys']))) + ' lines in this plot, so the list should have a '
+        q += 'total of ' +str(int(len(data['plot' + str(plot_num)]['data']['ys'])))+ ' entries. '
+
+    if use_list:
+        adder = adder.split(')')[0] + ' + list)'
+        q += 'Please choose each '+big_tag_short+' for each line from the following list for each line: ['
+        for pt in line_list:
+            q += pt + ', '
+        q = q[:-2] # take off the last bit
+        q += '].'
+
+    # answer
+    la = []
+    for i in range(len(data['plot' + str(plot_num)]['data']['ys'])):
+        dist = data['plot'+str(plot_num)]['distribution']
+        # to match
+        if dist == 'gmm': dist = 'gaussian mixture model'
+        la.append(dist) # note: assumes same for all!
+    #a = la
+    a = {big_tag_short + ' ' + adder:la}
+
     if verbose:
         print('QUESTION:', q)
         print('ANSWER:', a)
     if return_qa: 
-        if big_tag + ' ' + adder not in qa_pairs['Level 1']['Plot-level questions']:
-            qa_pairs['Level 1']['Plot-level questions'][big_tag + ' ' + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a}}
+        if big_tag_short + ' ' + adder not in qa_pairs['Level 3']['Plot-level questions']:
+            #print('yes', big_tag_short + ' ' + adder)
+            qa_pairs['Level 3']['Plot-level questions'][big_tag_short + ' ' + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
+                                                                                                              'note':'this currently assumes all elements on a single plot have the same relationship type'}}
         else:
-            qa_pairs['Level 1']['Plot-level questions'][big_tag + ' ' + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a}
+            qa_pairs['Level 3']['Plot-level questions'][big_tag_short + ' ' + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
+                                                                                                              'note':'this currently assumes all elements on a single plot have the same relationship type'}
         return qa_pairs

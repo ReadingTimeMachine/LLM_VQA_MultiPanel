@@ -242,6 +242,7 @@ def q_ticklabels(data, qa_pairs, axis='x', return_qa=True, verbose=True, text_pe
 def q_plot_types(data, qa_pairs, plot_types, return_qa=True, use_list=True, 
                  verbose=True, text_persona=None):
     outtag = 'plot types'
+    adder = '' # updated if using list
     ### persona of assistant
     text_persona = persona(text=text_persona)
     ### question
@@ -249,6 +250,7 @@ def q_plot_types(data, qa_pairs, plot_types, return_qa=True, use_list=True,
     ### context for question
     text_context = '' # full figure
     if use_list:
+        adder = ' (list)'
         text_context = 'Please choose each plot type from the following list: ['
         for pt in plot_types:
             text_context += pt + ', '
@@ -272,7 +274,7 @@ def q_plot_types(data, qa_pairs, plot_types, return_qa=True, use_list=True,
         print('QUESTION:', q)
         print('ANSWER:', answer)
     if return_qa: 
-        qa_pairs['Level 1']['Figure-level questions'][outtag] = {'Q':q, 'A':answer, 
+        qa_pairs['Level 1']['Figure-level questions'][outtag + adder] = {'Q':q, 'A':answer, 
                                                                          'persona':text_persona, 
                                                                          'context':text_context, 
                                                                          'question':text_question,

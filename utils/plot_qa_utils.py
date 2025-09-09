@@ -132,13 +132,17 @@ def context_single_multi(data, nplots, plot_num, use_words, single_figure_flag):
 
 ##### FEEDER FUNCTIONS (NEW) ######
 
-def get_adder(nplots, use_words):
+def get_adder(nplots, use_words, use_list=False, use_nlines=False):
     if use_words and nplots > 1:
         adder = ' (words)'
     elif not use_words and nplots > 1:
         adder = ' (plot numbers)'
     elif nplots == 1:
         adder = ''
+    if use_list:
+        adder += ' (list)'
+    if use_nlines:
+        adder += ' (nlines)'
     return adder
 
 
@@ -183,7 +187,7 @@ def how_much_data_values(big_tag, nplots=1, axis='x', val_type='a float',
 
 def what_is_relationship(big_tag, nplots=1, axis='x', val_type='a float', 
                          use_words=True, along_an_axis=False, 
-                         for_each=''):
+                         for_each='', use_list=False):
     axis_words = ''
     axis = ' ' + axis
     if along_an_axis:
@@ -193,7 +197,7 @@ def what_is_relationship(big_tag, nplots=1, axis='x', val_type='a float',
         axis = ''
     #q = 'What are the '+big_tag+' data values '+axis_words+' in this figure panel? '
     q = 'What is the underlying '+big_tag+' used to create the data in this figure panel'+axis_words+'?'
-    adder = get_adder(nplots, use_words)
+    adder = get_adder(nplots, use_words, use_list=use_list)
     # list or not?
     if 'list' in val_type:
         outputf = '"[]"'
