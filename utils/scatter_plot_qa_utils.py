@@ -88,11 +88,6 @@ def q_stats_scatters(data, qa_pairs, stat = {'minimum':np.min}, axis = 'x',
     #### Answer
     f = list(stat.values())[0] # what statical function
     zs = data['plot'+str(plot_num)]['data'][axis+'s']
-    # list_stat = []
-    # for z in zs:
-    #     list_stat.append(f(z))
-
-    # for_each = ', where each element of the list corresponds to one line in the plot'
     for_each = ''
     list_stat = f(zs)
 
@@ -145,7 +140,7 @@ def q_stats_scatters(data, qa_pairs, stat = {'minimum':np.min}, axis = 'x',
 
 ########## L2/L3 #############
 from .plot_qa_utils import what_is_relationship
-def q_relationship_scatters(data, qa_pairs, plot_num = 0, 
+def q_relationship_scatters(data, qa_pairs, plot_num = 0, axis='color',
                          return_qa=True, use_words=True, 
                          use_list=True, 
                         line_list = ['random','linear','gaussian mixture model'], 
@@ -155,6 +150,8 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0,
     use_words : set to True to translate row, column to words; False will use C-ordering indexing
     use_list : give a list of possible distributions
     use_nplots : give the number of lines in the prompt
+
+    axis : can be 'color' or 'x/y'
     """
     
     # how many plots
@@ -162,8 +159,11 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0,
     val_type = 'a string'
     for_each = ''
     along_an_axis = True
-    axis = 'color'
+    if (axis != 'color') and (axis !='x/y'):
+        print('wrong selection for axis!  must be "color" or "x/y"')
+        import sys; sys.exit()
     mark = 'scatter'
+    #big_tag += '-' + axis
 
     ### answer
     dist = data['plot'+str(plot_num)]['distribution']
@@ -185,14 +185,7 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0,
     ### persona of assistant
     text_persona = persona(text=text_persona)
     ## context for question
-    if nplots == 1 and single_figure_flag:
-        text_context = context(0, 0, use_words=use_words,
-                                single_figure_flag=single_figure_flag)
-    else:
-        nrow = data['figure']['plot indexes'][plot_num][0]
-        ncol = data['figure']['plot indexes'][plot_num][1]
-        pindex = data['figure']['plot indexes'][plot_num]
-        text_context = context(nrow,ncol,plot_index=pindex, use_words=use_words)
+    text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
 
     if use_list:
         adder = adder.split(')')[0] + ' + list)'
@@ -210,22 +203,21 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0,
 
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
 
-    a = {big_tag + ' ' + adder:la}
+    a = {big_tag + adder:la}
 
     if verbose:
         print('QUESTION:', q)
         print('ANSWER:', a)
     if return_qa: 
-        if big_tag + ' ' + adder not in qa_pairs['Level 3']['Plot-level questions']:
-            #print('yes', big_tag_short + ' ' + adder)
-            qa_pairs['Level 3']['Plot-level questions'][big_tag + ' ' + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
+        if big_tag + adder not in qa_pairs['Level 3']['Plot-level questions']:
+            qa_pairs['Level 3']['Plot-level questions'][big_tag + '-' + axis + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
                                                                                                               'note':'this currently assumes all elements on a single plot have the same relationship type', 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
                                                                                                         'format':text_format}}
         else:
-            qa_pairs['Level 3']['Plot-level questions'][big_tag + ' ' + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
+            qa_pairs['Level 3']['Plot-level questions'][big_tag + '-' + axis + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
                                                                                                               'note':'this currently assumes all elements on a single plot have the same relationship type', 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,

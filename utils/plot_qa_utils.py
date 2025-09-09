@@ -188,10 +188,16 @@ def how_much_data_values(big_tag, nplots=1, axis='x', val_type='a float',
 def what_is_relationship(big_tag, nplots=1, axis='x', val_type='a float', 
                          use_words=True, along_an_axis=False, 
                          for_each='', use_list=False):
+    """
+    axis : 'x', 'y', 'color' or 'x/y'/'x-y' -- if '/' or '-' assume along 2 axes.
+    """
     axis_words = ''
     axis = ' ' + axis
     if along_an_axis:
-        axis_words = ' along the' + axis + '-axis'
+        if '/' not in axis and '-' not in axis:
+            axis_words = ' along the' + axis + '-axis'
+        else:
+            axis_words = ' in the' + axis + '-plane'
         pass
     else:
         axis = ''
