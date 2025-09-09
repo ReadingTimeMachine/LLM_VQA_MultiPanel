@@ -20,7 +20,7 @@ def figure_qa_how_many_panels(data, qa_pairs, return_qa=True, verbose=True,
     a1 = {"nrows":data['figure']['nrows'], "ncols":data['figure']['ncols']}
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
-        print('QUESTION:', text_question)
+        print('QUESTION:', q)
         print('ANSWER:', a1)
         print('')
     # add to pairs
@@ -51,7 +51,7 @@ def figure_qa_plotting_style(data, qa_pairs, return_qa=True, verbose=True,
     answer = {"plot style":data['figure']['plot style']}
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
-        print('QUESTION:', text_question)
+        print('QUESTION:', q)
         print('ANSWER:', answer)
         print('')
     # add to pairs
@@ -82,7 +82,7 @@ def figure_qa_colormap(data, qa_pairs, return_qa=True, verbose=True,
     answer = {"colormap":data['figure']['color map']}
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
-        print('QUESTION:', text_question)
+        print('QUESTION:', q)
         print('ANSWER:', answer)
         print('')
     # add to pairs
@@ -111,7 +111,7 @@ def figure_qa_aspect_ratio(data, qa_pairs, return_qa=True, verbose=True,
     answer = {"aspect ratio":data['figure']['aspect ratio']}
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
-        print('QUESTION:', text_question)
+        print('QUESTION:', q)
         print('ANSWER:', answer)
         print('')    
 
@@ -151,7 +151,7 @@ def q_plot_titles(data, qa_pairs, return_qa=True, verbose=True,
 
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
-        print('QUESTION:', text_question)
+        print('QUESTION:', q)
         print('ANSWER:', answer)
         print('')  
 

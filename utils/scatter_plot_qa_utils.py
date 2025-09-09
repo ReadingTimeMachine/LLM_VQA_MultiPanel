@@ -4,7 +4,7 @@ import numpy as np
 
 
 
-from .plot_qa_utils import get_nplots, persona, context_single_multi, how_many, how_much_data_values, get_adder
+from .plot_qa_utils import get_nplots, persona, context_single_multi, how_many, how_much_data_values #, get_adder
 
 
 
@@ -209,7 +209,7 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0, axis='color',
         print('QUESTION:', q)
         print('ANSWER:', a)
     if return_qa: 
-        if big_tag + adder not in qa_pairs['Level 3']['Plot-level questions']:
+        if big_tag + '-' + axis + adder not in qa_pairs['Level 3']['Plot-level questions']:
             qa_pairs['Level 3']['Plot-level questions'][big_tag + '-' + axis + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
                                                                                                               'note':'this currently assumes all elements on a single plot have the same relationship type', 
                                                                                                         'persona':text_persona, 
