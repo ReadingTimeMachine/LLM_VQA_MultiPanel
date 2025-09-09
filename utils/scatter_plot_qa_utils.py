@@ -72,7 +72,7 @@ def q_stats_scatters(data, qa_pairs, stat = {'minimum':np.min}, axis = 'x',
     stat : dictionary of the name and function to use for each stat
     """
     # output type
-    val_type = 'a floats'
+    val_type = 'a float'
 
     # check
     if axis.lower() == 'x': 
@@ -104,14 +104,7 @@ def q_stats_scatters(data, qa_pairs, stat = {'minimum':np.min}, axis = 'x',
     ### persona of assistant
     text_persona = persona(text=text_persona)
     ## context for question
-    if nplots == 1 and single_figure_flag:
-        text_context = context(0, 0, use_words=use_words,
-                                single_figure_flag=single_figure_flag)
-    else:
-        nrow = data['figure']['plot indexes'][plot_num][0]
-        ncol = data['figure']['plot indexes'][plot_num][1]
-        pindex = data['figure']['plot indexes'][plot_num]
-        text_context = context(nrow,ncol,plot_index=pindex, use_words=use_words)
+    text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
 
     text_question, adder, text_format  = how_much_data_values(big_tag, nplots=nplots, 
                                                               axis=axis, 
