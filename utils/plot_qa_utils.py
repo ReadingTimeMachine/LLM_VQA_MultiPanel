@@ -19,7 +19,7 @@ def plot_index_to_words(pind):
     elif x == 0:
         p = n_to_word[y] + ' row and left-most'
     else:
-        p = n_to_word[x] + 'row and ' + n_to_word[y] + ' column'
+        p = n_to_word[x] + ' row and ' + n_to_word[y] + ' column'
     return p
 
 
