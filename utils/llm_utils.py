@@ -183,6 +183,8 @@ def parse_for_errors(qa, llm='chatgpt',
     """
     # try to fix
     for level in qa:
+        # if verbose:
+        #     print(level)
         noErr = False
         if 'Error' in level:
             noErr = True
@@ -209,6 +211,20 @@ def parse_for_errors(qa, llm='chatgpt',
                 level['Response'] = json.loads(level['Response'])
         except:
             pass
+
+        # double check no ````json` in there
+        if '```json' in level['Response']:
+            #print("HIIIIII")
+            try:
+                raw_ans = level['raw answer']
+                level['Response'] = json.loads(raw_ans.split('```json')[-1].split('```')[0].replace('\n',''))
+            except:
+                print('*******')
+                print('could not fix raw ans with Response')
+                print('Response: ', level['Response'])
+                print('Raw Answer: ', level['raw answer'])
+                print('*******')
+                #import sys; sys.exit()
     
         print_llm = 'LLM'
         if llm.lower()=='chatgpt':
