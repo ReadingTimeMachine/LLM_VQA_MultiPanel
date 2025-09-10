@@ -215,6 +215,10 @@ def parse_for_errors(qa, llm='chatgpt',
             print_llm = 'ChatGPT'
         elif 'claude' in llm.lower():
             print_llm = 'Claude'
+        elif 'gemini' in llm.lower():
+            print_llm = 'Gemini'
+        else:
+            print_llm = llm.capitalize()
         if not noErr and verbose:
             if print_what == 'question':
                 print('Q:', level['Q'])
