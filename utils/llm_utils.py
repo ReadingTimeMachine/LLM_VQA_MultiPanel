@@ -7,11 +7,12 @@ import re
 
 # parsing
 def parse_qa(level_parse, plot_level, qa, j, types, 
-             partials = ['persona', 'context','question', 'format']):
+             partials = ['persona', 'context','question', 'format'], 
+             use_split_keys = True):
     keys_tmp = list(j[level_parse][plot_level].keys())
     keys = []
     for k in keys_tmp:
-        if '(' in k:
+        if '(' in k and use_split_keys:
             k = k.split('(')[0].rstrip()
         keys.append(k)
     
@@ -23,14 +24,24 @@ def parse_qa(level_parse, plot_level, qa, j, types,
         v = ''
         kk = ''
         for t in types:
-            if k + " " + t in j[level_parse][plot_level]:
+            if k + " " + t in j[level_parse][plot_level]: # e.g., 'nlines (list + words)
                 v = j[level_parse][plot_level][k + " " + t]
                 #kk = k + " " + t
                 break
+        # if not use splits
+        if not use_split_keys:
+            if k in j[level_parse][plot_level]:
+                v = j[level_parse][plot_level][k]
         if v == '':
+            #print("HI")
             v = j[level_parse][plot_level][k]
             #kk = k
+            # get other elements
+            #print(v)
+            for p in partials:
+                dirs_partials[p] = v[p]
         if 'A' in v: # no plot
+            #print("HI2")
             if type(v['A']) == type({}):
                 ans = list(v['A'].values())[0]
             else:
@@ -43,7 +54,10 @@ def parse_qa(level_parse, plot_level, qa, j, types,
             for p in partials:
                 dirs_partials[p] = v[p]
         else: # plotX
-            for kk,vv in v.items():
+            #print("HI3")
+            #print('v=', v)
+            for kk,vv in v.items(): # kk=plotX,stuff
+                #print('kk,vv', kk,vv)
                 ans = vv['A']
                 while type(ans) == type({}):
                     ans_1 = list(ans.values())[0]
@@ -52,9 +66,11 @@ def parse_qa(level_parse, plot_level, qa, j, types,
                         break
                     ans = ans_1
                 que = vv['Q']
+                #print('ans, q', ans, que)
                 # get other elements
                 for p in partials:
                     dirs_partials[p] = vv[p]
+                #print('dirs_partials:', dirs_partials)
         out = {'Q':que, 'A':ans, 'Level':level_parse, 'type':plot_level, 'Response':""}
         for kp,vp in dirs_partials.items():
             out[kp] = vp
