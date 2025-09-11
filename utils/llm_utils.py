@@ -84,7 +84,8 @@ def parse_qa(level_parse, plot_level, qa, j, types,
 
 def load_image(image_path, tmp_dir = '/Users/jnaiman/Downloads/tmp/', fac=1.0, 
                return_image_format = False, 
-               img_format='png'):
+               img_format='png', 
+               max_img_size=(None,None)):
     """
     Encode image for passing to various LLMs.
 
@@ -95,8 +96,20 @@ def load_image(image_path, tmp_dir = '/Users/jnaiman/Downloads/tmp/', fac=1.0,
         img_format = 'png'
     #print('1:', image_path)
     img = Image.open(image_path).convert('RGB')
-    new_size = np.round(np.array(img.size)*fac).astype('int')
-    img = img.resize(new_size, Image.Resampling.LANCZOS)
+    if fac != 1.0:
+        new_size = np.round(np.array(img.size)*fac).astype('int')
+        img = img.resize(new_size, Image.Resampling.LANCZOS)
+    # test
+    if max_img_size[0] is not None:
+        if img.size[0] > max_img_size[0]:
+            n0 = max_img_size[0]-1
+            aspect = int(round(img.size[1]*float(n0)/img.size[0]))
+            img = img.resize((n0,aspect), Image.Resampling.LANCZOS)
+    if max_img_size[1] is not None:
+        if img.size[1] > max_img_size[1]:
+            n0 = max_img_size[1]-1
+            aspect = int(round(img.size[0]*float(n0)/img.size[1]))
+            img = img.resize((aspect,n0), Image.Resampling.LANCZOS)            
     #img = np.array(img)
     #with open(image_path, "rb") as image_file:
     img.save(tmp_dir + 'tmp_img.'+img_format)
@@ -116,7 +129,8 @@ def get_img_json_pair(img_path, json_path, dir_api,
                       img_format = 'png',
                       return_image_format = True,
                       restart = False, verbose = True, 
-                      load_image_tmp = True):
+                      load_image_tmp = True, 
+               max_img_size=(None,None)):
     """
     img_path : where image file is stored
     json_path : where json path is stored
@@ -144,7 +158,8 @@ def get_img_json_pair(img_path, json_path, dir_api,
         if load_image_tmp:
             encoded_image, img_format = load_image(img_path, fac=fac, tmp_dir=tmp_dir, 
                                                img_format=img_format, 
-                                               return_image_format=return_image_format)
+                                               return_image_format=return_image_format, 
+                                               max_img_size=max_img_size)
         else:
             encoded_image = ''
             img_format = img_path.split('.')[-1]
