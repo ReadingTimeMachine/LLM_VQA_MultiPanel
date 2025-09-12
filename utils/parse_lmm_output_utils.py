@@ -302,3 +302,80 @@ def map_lg_lt(l_save, g_save, verbose=True):
         print('')
 
     return l_mapped, g_mapped
+
+
+
+def calc_iqr(diff1):
+    diff1 = np.array(diff1)
+    diff1 = diff1[~np.isnan(diff1)]
+    q1 = np.percentile(diff1, 25)
+    q3 = np.percentile(diff1, 75)
+    iqr = q3 - q1
+    return iqr
+
+def count_nan(lmm):
+    lmm = np.array(lmm)
+    calc_nan = np.array(lmm)
+    try:
+        calc_nan = len(calc_nan[np.isnan(calc_nan)])    
+    except:
+        calc_nan = len(calc_nan[calc_nan == None])
+    return calc_nan
+
+
+def get_lmm_gt(dfsub2, type, verbose=True):
+    if type == 'binary string':
+        gt = []; lmm = []
+        for v in dfsub2['GT Answer'].values:
+            gt.append(list(v.values())[0].lower())
+        gt = np.array(gt)
+        for v in dfsub2['LMM Answer'].values:
+            lmm.append(list(v.values())[0].lower())
+        lmm = np.array(lmm)
+    elif type == 'float' or type == 'float per panel':
+        gt = []; lmm = []
+        for v in dfsub2['GT Answer'].values:
+            gt.append(list(v.values())[0])
+        gt = np.array(gt)
+        for v in dfsub2['LMM Answer'].values: # v = {'mean': 5.0}
+            l = list(v.values())[0]
+            if l is None:
+                l = np.nan
+            lmm.append(l)
+        lmm = np.array(lmm)
+        gt = np.array(gt)
+    elif type == 'string list' or type == 'binary string list':
+        gt = []; lmm = []
+        # have to do at same time to match lists
+        for vgt,vlmm in zip(dfsub2['GT Answer'].values, dfsub2['LMM Answer'].values):
+            k = list(vgt.keys())[0]
+            g = vgt[k]
+            l = vlmm[k]
+            try:
+                # same lenghts?
+                if len(g) > len(l):
+                    lmapped,gmapped = map_lg_gt(deepcopy(l),deepcopy(g), verbose=verbose)
+                elif len(g) < len(l):
+                    lmapped,gmapped = map_lg_lt(deepcopy(l),deepcopy(g), verbose=verbose)
+                elif len(g) == len(l):
+                    lmapped = deepcopy(l)
+                    gmapped = deepcopy(g)  
+            except:
+                if np.isnan(l):
+                    lmapped = np.repeat('', len(g))
+                    gmapped = deepcopy(g)
+                else:
+                    print('cannot figure this out!')
+                    lakdsjl
+
+            for gg,ll in zip(gmapped,lmapped): # lower
+                if '<EMPTY>' in gg: 
+                    print("!!!!!!!!!!!!!! ERROR ERROR ERROR !!!!!!!!!!!!!")
+                    import sys; sys.exit()
+                gt.append(gg)
+                lmm.append(ll)      
+
+        # print('NO IMPLEMENTATION', type)
+        # import sys; sys.exit()
+
+    return gt, lmm
