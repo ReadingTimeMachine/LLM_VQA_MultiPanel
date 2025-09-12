@@ -172,7 +172,7 @@ def q_plot_axis_labels(data, qa_pairs, return_qa=True, verbose=True,
     ### context for question
     text_context = '' # full figure
     ### question
-    text_question = 'What are the x-axis titles for each figure panel?'
+    text_question = 'What are the '+axis+'-axis titles for each figure panel?' # JPN update
     text_format = 'Please format the output as a json as {"'+axis+'labels":[]}, where the list is a list of strings of all of the '+axis+'-axis titles. '
     text_format += 'If there is a single plot, this should be one element in this list, and if there are multiple plots the list should be in row-major (C-style) order.'
     text_format += " If a plot does not have an "+axis+"-axis title, then denote this by an empty string in the list.  "
