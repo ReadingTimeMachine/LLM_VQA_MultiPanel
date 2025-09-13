@@ -52,6 +52,8 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                 use_list = False
                 if 'choose' in qa['format']:
                     use_list = True
+                elif 'please choose ' in qa['context'].lower():
+                    use_list = True
                 dfdict['use list'].append(use_list)
                 # try loading response
                 try:
