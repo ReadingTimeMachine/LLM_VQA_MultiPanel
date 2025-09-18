@@ -46,19 +46,19 @@ def log_scale_ax(scale_exp = {'min':0.01, 'max':5.0},
 
 
 
-# dpi
-def dpi(data, qa_pairs, return_qa=True, verbose=True):
-    q1 = 'What is the DPI (dots per square inch) of this figure?'
-    q1 += ' You are a helpful assistant, please format the output as a json as {"dpi":""} to store the DPI of the plot.'
-    a1 = {"dpi":data['figure']['dpi']}
-    if verbose:
-        print('QUESTION:', q1)
-        print('ANSWER:', a1)
-        print('')
-    # add to pairs
-    if return_qa: 
-        qa_pairs['Level 1']['Figure-level questions']['dpi'] = {'Q':q1, 'A':a1}
-        return qa_pairs
+# # dpi
+# def dpi(data, qa_pairs, return_qa=True, verbose=True):
+#     q1 = 'What is the DPI (dots per square inch) of this figure?'
+#     q1 += ' You are a helpful assistant, please format the output as a json as {"dpi":""} to store the DPI of the plot.'
+#     a1 = {"dpi":data['figure']['dpi']}
+#     if verbose:
+#         print('QUESTION:', q1)
+#         print('ANSWER:', a1)
+#         print('')
+#     # add to pairs
+#     if return_qa: 
+#         qa_pairs['Level 1']['Figure-level questions']['dpi'] = {'Q':q1, 'A':a1}
+#         return qa_pairs
 
 
 

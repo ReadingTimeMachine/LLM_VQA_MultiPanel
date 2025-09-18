@@ -107,7 +107,8 @@ def figure_qa_aspect_ratio(data, qa_pairs, return_qa=True, verbose=True,
     text_context = '' # full figure
 
     text_question = 'What is the aspect ratio of this figure?'
-    text_format = 'You are a helpful assistant, please format the output as a json as {"aspect ratio":""} to store the aspect ratio of the plot.'
+    #text_format = 'You are a helpful assistant, please format the output as a json as {"aspect ratio":""} to store the aspect ratio of the plot.' # JPN also
+    text_format = 'Please format the output as a json as {"aspect ratio":""} to store the aspect ratio of the plot.' # JPN also update
     answer = {"aspect ratio":data['figure']['aspect ratio']}
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
