@@ -187,6 +187,7 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0, axis='color',
     ## context for question
     text_context = context_single_multi(data, nplots, plot_num, use_words, single_figure_flag)
 
+    text_context_adder = ''
     if use_list:
         adder = adder.split(')')[0] + ' + list)'
         if for_each != '':
@@ -195,11 +196,12 @@ def q_relationship_scatters(data, qa_pairs, plot_num = 0, axis='color',
         else:
             fe = ''
             eot = 'the'
-        text_format += ' Please choose '+eot+' '+big_tag+fe+' from the following list: ['
+        text_context_adder += ' Please choose '+eot+' '+big_tag+fe+' from the following list: ['
         for pt in line_list:
-            text_format += pt + ', '
-        text_format = text_format[:-2] # take off the last bit
-        text_format += '].'
+            text_context_adder += pt + ', '
+        text_context_adder = text_context_adder[:-2] # take off the last bit
+        text_context_adder += '].'
+    text_context += text_context_adder
 
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
 

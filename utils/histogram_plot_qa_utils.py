@@ -153,11 +153,11 @@ def q_relationship_histograms(data, qa_pairs, plot_num = 0,
         else:
             fe = ''
             eot = 'the'
-        text_format += ' Please choose '+eot+' '+big_tag+fe+' from the following list: ['
+        text_context += ' Please choose '+eot+' '+big_tag+fe+' from the following list: ['
         for pt in line_list:
-            text_format += pt + ', '
-        text_format = text_format[:-2] # take off the last bit
-        text_format += '].'
+            text_context += pt + ', '
+        text_context = text_context[:-2] # take off the last bit
+        text_context += '].'
 
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
 
