@@ -3,12 +3,39 @@ import json
 import pickle
 import numpy as np
 from copy import deepcopy
+import re
 
 
 def parse_first_json(text):
     decoder = json.JSONDecoder()
     obj, idx = decoder.raw_decode(text)
     return obj
+
+# claude suggestions for fixing slashes
+# Replace single backslashes with double backslashes in JSON strings
+def fix_json_escapes(json_str):
+    # This pattern finds backslashes that aren't already properly escaped
+    return re.sub(r'(?<!\\)\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})', r'\\\\', json_str)
+
+def fix_raw_strings(json_str):
+    # Remove r" prefixes and escape backslashes in the content
+    def replace_raw_string(match):
+        content = match.group(1)
+        # Escape backslashes
+        escaped_content = content.replace('\\', '\\\\')
+        return f'"{escaped_content}"'
+    
+    # Find r"..." patterns and replace them
+    return re.sub(r'r"([^"]*)"', replace_raw_string, json_str)
+
+# Or more comprehensive - escape all single backslashes before letters
+def fix_all_latex(json_str):
+    return re.sub(r'(?<!\\)\\(?=[a-zA-Z])', r'\\\\', json_str)
+
+def fix_latex_math(json_str):
+    # Add quotes around $...$ expressions
+    return re.sub(r'\$([^$]+)\$', r'"\$\1\$"', json_str)
+
 
 def parse_json_files(dirnames, dirs, files_parsed, dir_jsons, 
                      verbose=True):
@@ -20,7 +47,9 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
     for ifile,(dn,dr) in enumerate(zip(dirnames, dirs)):
         if verbose:
             print('')
+            print('****************************************')
             print('***********', dn, '****************')
+            print('****************************************')
             print('')
         for f in files_parsed:
             if verbose: print("-----------", f, '------------')
@@ -70,8 +99,11 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                     #import sys; sys.exit()
                     jgt = {q:jgt}
                 # llm
-                raw_ans = qa['raw answer']
+                raw_ans_in = qa['raw answer']
                 jllm = {}
+                raw_ans = raw_ans_in.replace('^', 'e') # math notation
+                raw_ans = raw_ans.replace('**','e')
+                raw_ans = re.sub(r'(\d*\.?\d+e)\s*\(\s*-\s*(\d+)\s*\)', r'\1-\2', raw_ans)
                 if '`' not in raw_ans:
                     try:
                         jllm = json.loads(raw_ans)
@@ -81,8 +113,10 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                             a = '{' + raw_ans.split('{')[-1].split('}')[0] + '}'
                             try:
                                 jllm = json.loads(a)
-                            except:
-                                if verbose: print('could not load answer for non `:', raw_ans)
+                            except Exception as esplit:
+                                if verbose: 
+                                    print('[ERROR]: could not load answer for this json :', a)
+                                    print('  full exception:', str(esplit))
                                 #fslkfjs
                                 if verbose: print('')
                                 jllm[list(jgt.keys())[0]] = np.nan
@@ -92,39 +126,76 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                         jllm = json.loads(a)
                     except Exception as e:
                         if "Expecting ',' delimiter" in str(e):
-                            if verbose: print('[ERROR]: json decode error -- ', str(e))
+                            if verbose: 
+                                print('[ERROR]: json decode error (delimiter) -- ', str(e))
+                                print('   json:', a)
                             jllm[list(jgt.keys())[0]] = np.nan
                             if verbose: print('')
                         elif 'Unterminated string' in str(e):
-                            if verbose: print('[ERROR]: json decode error -- ', str(e))
+                            if verbose: 
+                                print('[ERROR]: json decode error (unterminated string) -- ', str(e))
+                                print('   json:', a)
                             jllm[list(jgt.keys())[0]] = np.nan
                             if verbose: print('')
                         elif 'Expecting value:' in str(e):
-                            if verbose: print('[ERROR]: json decode error -- ', str(e))
-                            jllm[list(jgt.keys())[0]] = np.nan
-                            if verbose: print('')
+                            try:
+                                a = raw_ans.split('```json\n')[-1].split('```')[0]
+                                a = fix_raw_strings(a)
+                                jllm = json.loads(a)
+                            except Exception as e2:
+                                try:
+                                    a = raw_ans.split('```json\n')[-1].split('```')[0]
+                                    a = fix_raw_strings(a)
+                                    a = fix_all_latex(a)
+                                    jllm = json.loads(a)
+                                except Exception as e22:
+                                    try:
+                                        a = raw_ans.split('```json\n')[-1].split('```')[0]
+                                        a = fix_raw_strings(a)
+                                        a = fix_latex_math(a)
+                                        jllm = json.loads(a)
+                                    except Exception as e222:
+                                        if verbose: 
+                                            print('[ERROR]: json decode error (expecting value, t22) -- ', str(e222))
+                                            print('   json:', a)
+                                        jllm[list(jgt.keys())[0]] = np.nan
+                                        if verbose: print('')
                         elif 'Invalid \\escape' in str(e):
                             try:
                                 a = raw_ans.split('```json\n')[-1].split('```')[0]
                                 a = a.replace('\\\\', '\\')
                                 jllm = json.loads(a)
                             except Exception as e2:
-                                if verbose: print('[ERROR]: json decode error, t2 -- ', str(e2))
-                                if 'Invalid \\escape' in str(e2):
-                                    jllm[list(jgt.keys())[0]] = np.nan
-                                else:
-                                    fjffj
+                                try:
+                                    a = raw_ans.split('```json\n')[-1].split('```')[0]
+                                    a = a.replace('\\\\', '\\')
+                                    a = fix_json_escapes(a)
+                                    jllm = json.loads(a)
+                                except Exception as e22:
+                                    if verbose: 
+                                        print('[ERROR]: json decode error, t3 -- ', str(e22))
+                                        print('   json:', a)
+                                # if 'Invalid \\escape' in str(e2):
+                                #     jllm[list(jgt.keys())[0]] = np.nan
+                                # else:
+                                #     fjffj
                         elif 'Extra data:' in str(e):
                             try:
                                 jllm = parse_first_json(raw_ans.split('```json\n')[-1].split('```')[0])
                             except Exception as e2:
-                                if verbose: print('[ERROR]: json decode error --', str(e2))
+                                if verbose: 
+                                    print('[ERROR]: json decode error (extra data) --', str(e2))
+                                    print('   json:', a)
                                 jllm[list(jgt.keys())[0]] = np.nan
                         elif 'Expecting property name enclosed in double quotes:' in str(e):
-                            if verbose: print('[ERROR]: json decode error --', str(e))
+                            if verbose: 
+                                print('[ERROR]: json decode error (double quotes) --', str(e))
+                                print('   json:', a)
                             jllm[list(jgt.keys())[0]] = np.nan
                         elif 'Invalid control character at:' in str(e):
-                            if verbose: print('[ERROR]: json decode error --', str(e))
+                            if verbose: 
+                                print('[ERROR]: json decode error (invalid control char) --', str(e))
+                                print('   json:', a)
                             jllm[list(jgt.keys())[0]] = np.nan
                         else:
                             print('could not load answer, 2:', raw_ans)
@@ -169,14 +240,29 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                                     a = type(v)(x)
                                     jllm[k] = a
                                 except:
-                                    if verbose:
-                                        print('different types of values:')
-                                        print('GT:', v, type(v))
-                                        print('LLM:', jllm[k], type(jllm[k]))
-                                    if type(jllm[k]) == type(''):
-                                        jllm[k] = None
-                                    else:
-                                        laksjl
+                                    # try for floats
+                                    try:
+                                        if type(v) == type(1.0) and type(jllm[k]) == type('string'):
+                                            if '/' in jllm[k]:
+                                                tofloat = float(jllm[k].split('/')[0])*1.0/float(jllm[k].split('/')[-1])
+                                            else:
+                                                tofloat = None
+                                        else:
+                                            tofloat = None
+                                        if tofloat is None:
+                                            print('different types of values, could not fix:')
+                                            print('GT:', v, type(v))
+                                            print('LLM:', jllm[k], type(jllm[k]))
+                                        jllm[k] = tofloat
+                                    except:
+                                        if verbose:
+                                            print('different types of values:')
+                                            print('GT:', v, type(v))
+                                            print('LLM:', jllm[k], type(jllm[k]))
+                                        if type(jllm[k]) == type(''):
+                                            jllm[k] = None
+                                        else:
+                                            laksjl
                             #import sys; sys.exit()
                 # drop non-presents
                 jllm_tmp = deepcopy(jllm)
