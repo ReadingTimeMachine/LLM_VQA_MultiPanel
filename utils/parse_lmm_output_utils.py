@@ -104,6 +104,7 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                 raw_ans = raw_ans_in.replace('^', 'e') # math notation
                 raw_ans = raw_ans.replace('**','e')
                 raw_ans = re.sub(r'(\d*\.?\d+e)\s*\(\s*-\s*(\d+)\s*\)', r'\1-\2', raw_ans)
+                raw_ans = raw_ans.replace('True', 'true').replace('False', 'false')
                 if '`' not in raw_ans:
                     try:
                         jllm = json.loads(raw_ans)
@@ -218,10 +219,12 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                 for k,v in jgt.items():
                     if k not in jllm:
                         if verbose:
-                            print('missing key:', k)
-                            print('question format:', qa['format'])
-                            print('GT:', jgt)
-                            print('LMM:', jllm)
+                            print('[ERROR]: missing key:', k)
+                            print('  question format:', qa['format'])
+                            print('  GT:', jgt)
+                            print('  LMM:', jllm)
+                            print('  raw LMM:', raw_ans_in.split('\n')[0])
+                            print('')
                         jllm[k] = np.nan
                         #import sys; sys.exit()
                     elif type(jllm[k]) != type(v):
@@ -250,15 +253,19 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                                         else:
                                             tofloat = None
                                         if tofloat is None:
-                                            print('different types of values, could not fix:')
-                                            print('GT:', v, type(v))
-                                            print('LLM:', jllm[k], type(jllm[k]))
+                                            print('[ERROR]: different types of values, could not fix:')
+                                            print('  GT:', v, type(v))
+                                            print('  LLM:', jllm[k], type(jllm[k]))
+                                            print('  raw LLM:', raw_ans_in.split('\n')[0])
+                                            print('')
                                         jllm[k] = tofloat
                                     except:
                                         if verbose:
-                                            print('different types of values:')
-                                            print('GT:', v, type(v))
-                                            print('LLM:', jllm[k], type(jllm[k]))
+                                            print('[ERROR]: different types of values:')
+                                            print('  GT:', v, type(v))
+                                            print('  LLM:', jllm[k], type(jllm[k]))
+                                            print('  raw LLM:', raw_ans_in.split('\n')[0])
+                                            print('')
                                         if type(jllm[k]) == type(''):
                                             jllm[k] = None
                                         else:

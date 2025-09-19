@@ -28,6 +28,10 @@ TBD
 
 TBD
 
+## Known Issues
+
+1. For Claude -- token limits mean there are some issues for multi-panel plots, specifically for x/y tick values
+
 ## Citation information
 
 If you use this work please cite:
