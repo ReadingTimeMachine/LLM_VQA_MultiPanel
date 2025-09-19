@@ -148,7 +148,7 @@ def q_plot_titles(data, qa_pairs, return_qa=True, verbose=True,
                 la.append("")
             else:
                 la.append(v['title']['words'])
-    answer = {"title":la}
+    answer = {"titles":la} # JPN also updated so both say "titles"
 
     q = text_persona + " " + text_context + " " + text_question + " " + text_format
     if verbose:
