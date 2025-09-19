@@ -34,14 +34,25 @@ def q_errorbars_existance_lines(data, qa_pairs, axis = 'x', plot_num = 0, return
         print('QUESTION:', q)
         print('ANSWER:', a)
     if return_qa: 
+        # JPN updates -- leads to "xx-error bars" and "yy-error bars"
         if axis+'-axis errors' + adder not in qa_pairs['Level 2']['Plot-level questions']:
-            qa_pairs['Level 2']['Plot-level questions'][axis+big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
+            # qa_pairs['Level 2']['Plot-level questions'][axis+big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
+            #                                                                                             'persona':text_persona, 
+            #                                                                                             'context':text_context,
+            #                                                                                             'question':text_question, 
+            #                                                                                             'format':text_format}}
+            qa_pairs['Level 2']['Plot-level questions'][big_tag + adder] = {'plot'+str(plot_num):{'Q':q, 'A':a, 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
                                                                                                         'format':text_format}}
         else:
-            qa_pairs['Level 2']['Plot-level questions'][axis+big_tag + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
+            # qa_pairs['Level 2']['Plot-level questions'][axis+big_tag + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
+            #                                                                                             'persona':text_persona, 
+            #                                                                                             'context':text_context,
+            #                                                                                             'question':text_question, 
+            #                                                                                             'format':text_format}
+            qa_pairs['Level 2']['Plot-level questions'][big_tag + adder]['plot'+str(plot_num)] = {'Q':q, 'A':a, 
                                                                                                         'persona':text_persona, 
                                                                                                         'context':text_context,
                                                                                                         'question':text_question, 
