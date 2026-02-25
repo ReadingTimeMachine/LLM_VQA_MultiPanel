@@ -1,7 +1,18 @@
 # JPN: this will all need to be reorg'd!
 
+
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+def print_figure_params(figure_params):
+    print('--- Figure level params ---')
+    print('colormap:', figure_params['color map'])
+    print('plot style:', figure_params['plot style'])
+    print('aspect ratio:', figure_params['aspect ratio'])
+    print('DPI:', figure_params['dpi'])
+    print('# panels, # rows, # columns, panel style:', figure_params['# panels'], 
+        figure_params['# rows'], figure_params['# columns'], figure_params['panel style'])
 
 def make_base_plot(figure_params, verbose=True, constrained_layout = False):
 
@@ -1265,6 +1276,30 @@ def get_fonts(fullproc_r, fontfile='fonts.csv',
     return font_names
 
 
+def close_plot_fail(fig, ifigure, fake_figs_dir, img_format, 
+                remove_diags = True, verbose=True, figure_name = None):
+    if figure_name is None:
+        figure_name = 'Picture_' + str(ifigure+1).zfill(6)
+
+    try:
+        plt.close(fig)
+    except Exception as e:
+        if verbose:
+            print('[WARNING]: could not close fig (' + str(e) + ')')
+    try:
+        os.remove(fake_figs_dir + 'jsons/' + figure_name + '.json')
+    except:
+        if verbose: print('-- could not remove:', fake_figs_dir + 'jsons/' + figure_name + '.json')
+    loops = ['diags', 'imgs']
+    if not remove_diags: loops = ['imgs']
+    for d in loops:
+        for iformat in img_format:
+            try:
+                os.remove(fake_figs_dir + d + '/' + figure_name + '.' + iformat)
+            except:
+                if verbose: print('-- could not remove:', fake_figs_dir + d + '/' + figure_name + '.' + iformat)
+
+
 from .metric_utils.utilities import isRectangleOverlap
 from .synthetic_fig_utils import get_font_info
 from .plot_parameters import fontsizes
@@ -1525,14 +1560,7 @@ def check_exceptions(e, figure, verbose=True, error_front = '', **kwargs):
     return figure
 
 
-def print_figure_params(figure_params):
-    print('--- Figure level params ---')
-    print('colormap:', figure_params['color map'])
-    print('plot style:', figure_params['plot style'])
-    print('aspect ratio:', figure_params['aspect ratio'])
-    print('DPI:', figure_params['dpi'])
-    print('# panels, # rows, # columns, panel style:', figure_params['# panels'], 
-        figure_params['# rows'], figure_params['# columns'], figure_params['panel style'])
+
     
 
 
@@ -1604,28 +1632,7 @@ def close_plot_success(fig, datas, ifigure, fake_figs_dir, figure_params,
         return dirs
 
 
-def close_plot_fail(fig, ifigure, fake_figs_dir, img_format, 
-                remove_diags = True, verbose=True, figure_name = None):
-    if figure_name is None:
-        figure_name = 'Picture_' + str(ifigure+1).zfill(6)
 
-    try:
-        plt.close(fig)
-    except Exception as e:
-        if verbose:
-            print('[WARNING]: could not close fig (' + str(e) + ')')
-    try:
-        os.remove(fake_figs_dir + 'jsons/' + figure_name + '.json')
-    except:
-        if verbose: print('-- could not remove:', fake_figs_dir + 'jsons/' + figure_name + '.json')
-    loops = ['diags', 'imgs']
-    if not remove_diags: loops = ['imgs']
-    for d in loops:
-        for iformat in img_format:
-            try:
-                os.remove(fake_figs_dir + d + '/' + figure_name + '.' + iformat)
-            except:
-                if verbose: print('-- could not remove:', fake_figs_dir + d + '/' + figure_name + '.' + iformat)
 
 
 

@@ -26,7 +26,7 @@ from synthetic_training_figures.utils.synthetic_fig_utils import get_font_params
 #from utils.synthetic_fig_utils import get_titles_or_labels, get_titles_or_labels_ra_dec, normalize_params_prob, get_font_params, add_titles_and_labels, collect_plot_data_axes
 
 
-from synthetic_training_figures.utils.tmp_port_from_script import set_figure_params
+#from synthetic_training_figures.utils.tmp_port_from_script import set_figure_params
 from synthetic_training_figures.utils.plot_check_utils import set_all_seeds, check_aspect, check_labels_titles_off_page
 
 #from utils.tmp_port_from_script import 
