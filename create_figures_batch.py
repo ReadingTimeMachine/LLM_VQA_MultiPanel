@@ -9,7 +9,7 @@ parser.add_argument("-arxiv_dir", nargs='?', default="~/Dropbox/wwt_image_extrac
 #parser.add_argument("-save_jsons_dir", nargs='?', default="/Users/jnaiman/Dropbox/wwt_image_extraction/FullProcess_resources/arxiv_new_json_test/") # JPN HERE
 parser.add_argument("-save_dir", nargs='?', default="~/Dropbox/jcdl_followup/synthetic_figures/") 
 parser.add_argument("-nProcs", nargs='?', default=2)
-parser.add_argument("-number_of_figures", nargs='?', default=700)
+parser.add_argument("-number_of_figures", nargs='?', default=2)
 
 
 
@@ -51,19 +51,96 @@ nProcs = args.nProcs
 
 timeout_seconds = timeout*60
 
+################################
+# Imports and Libraries
 
-
-
-# from sys import path
-# path.append('../ArXiv_figure_injection/')
 from utils.main_plot_utils import make_random_plot
+import matplotlib.pyplot as plt
+import numpy as np
+
+import matplotlib as mpl
+# need to use non-interactive!
+mpl.use('Agg')
+import os
+os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
+mpl.rcParams['text.usetex'] = True
+mpl.rcParams['text.latex.preamble'] = r'\usepackage{amsmath} \usepackage{amssymb}' 
+
+from yt.enable_parallelism import turn_on_parallelism
+from yt.utilities.parallel_tools.parallel_analysis_interface import parallel_objects
+from yt.funcs import is_root
+from yt.utilities.parallel_tools.parallel_analysis_interface import communication_system
+#print('comm system started')
+
+turn_on_parallelism()
+
+comm = communication_system.communicators[-1]
+
+running_in_parallel = False
+# Check if parallel
+if comm.size > 1:
+    running_in_parallel = True
+    if is_root():
+        print('Running in parallel')
+else:
+    print('Running in serial')
+
+########## SETUP ##############
+
+if is_root():
+    print('-- Start setup -- ')
+
+fullproc_r = os.path.expanduser(fullproc_r)
+fake_figs_dir = os.path.expanduser(fake_figs_dir)
+astroquery_img_dir = os.path.expanduser(astroquery_img_dir)
 
 
+# check directories
+img_dir = fake_figs_dir + '/imgs/'
+if not os.path.exists(img_dir):
+    os.mkdir(img_dir)
+    print('made:', img_dir)
+json_dir = fake_figs_dir + '/jsons/'
+if not os.path.exists(json_dir):
+    os.mkdir(json_dir)
+    print('made:', json_dir)
+
+for d in ['pickles']:
+    pickle_dir = fake_figs_dir + '/'+d+'/'
+    if not os.path.exists(pickle_dir):
+        os.mkdir(pickle_dir)
+        print('made:', pickle_dir)
+
+if save_diagnostic_plot:
+    img_dir = fake_figs_dir + '/diags/'
+    if not os.path.exists(img_dir):
+        os.mkdir(img_dir)
+        print('made:', img_dir)
 
 
+############# RUN THE THING ################
+plt.close('all')
+
+ifigures = np.arange(0,ifigures_max)
+#print(ifigures)
+my_storage = {}
+
+for sto, ifigure in parallel_objects(ifigures, nProcs,storage=my_storage):
+    sto.result_id = ifigure
+
+    diagsout = make_random_plot(fake_figs_dir = fake_figs_dir, ifigure=ifigure)
 
 ##### HERE ######
 import sys; sys.exit()
+
+
+
+
+
+
+
+
+
 
 ######### IMPORTS #############
 
