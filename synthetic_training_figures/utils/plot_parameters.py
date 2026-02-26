@@ -12,7 +12,7 @@ panel_params = {
     'number prob': {
         'min':1, # minimum number of panels
         'max':25, # maximum number of panels
-        'median':1,
+        'median':4,
         'std':10
     },
     'layout prob':{'horizontal':0.5,'vertical':0.25, 'squarish':0.25}, # probability things are horizontal, vertical, square-ish
