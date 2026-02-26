@@ -34,108 +34,114 @@ def make_plotplotparams(fullproc_r = "~/ArXiv_figure_injection/resources/",
     ### Scatter plots
     linestyles = ['-', '--', ':'] # only use a subset of the linestyles
 
-    plot_params_line = {'scatter':plot_params['scatter'].copy()}
+    if 'scatter' in plot_params:
 
-    plot_params_line['scatter']['npoints'] = {'min':10, 'max':150}
+        plot_params_line = {'scatter':plot_params['scatter'].copy()}
 
-    plot_params_line['scatter']['colormap scatter'] = {'prob': 0.85}
+        plot_params_line['scatter']['npoints'] = {'min':10, 'max':150}
 
-    # just linear, random
-    plot_params_line['scatter']['distribution']['random']['prob'] = 1 # 
+        plot_params_line['scatter']['colormap scatter'] = {'prob': 0.85}
 
-    # gaussian mixture model
-    plot_params_line['scatter']['distribution']['gmm']['prob'] = 1
-    plot_params_line['scatter']['distribution']['gmm']['nclusters'] = {'min': 1, 'max': 5}
-    plot_params_line['scatter']['distribution']['gmm']['nsamples'] = {'min': 10, 'max': 50}
+        # just linear, random
+        plot_params_line['scatter']['distribution']['random']['prob'] = 1 # 
 
-    # linear plots
-    plot_params_line['scatter']['distribution']['linear']['prob'] = 1
+        # gaussian mixture model
+        plot_params_line['scatter']['distribution']['gmm']['prob'] = 1
+        plot_params_line['scatter']['distribution']['gmm']['nclusters'] = {'min': 1, 'max': 5}
+        plot_params_line['scatter']['distribution']['gmm']['nsamples'] = {'min': 10, 'max': 50}
 
-    # probability of getting a scatter plot
-    plot_params_line['scatter']['prob'] = 1
+        # linear plots
+        plot_params_line['scatter']['distribution']['linear']['prob'] = 1
+
+        # probability of getting a scatter plot
+        plot_params_line['scatter']['prob'] = 1
 
     ### Line plots
-    plot_params_line['line'] = plot_params['line'].copy()
+    if 'line' in plot_params:
+        plot_params_line['line'] = plot_params['line'].copy()
 
-    plot_params_line['line']['npoints'] = {'min':10, 'max':100}
-    plot_params_line['line']['nlines'] = {'min':1, 'max':10}
+        plot_params_line['line']['npoints'] = {'min':10, 'max':100}
+        plot_params_line['line']['nlines'] = {'min':1, 'max':10}
 
-    # just linear, random
-    plot_params_line['line']['distribution']['random']['prob'] = 1
+        # just linear, random
+        plot_params_line['line']['distribution']['random']['prob'] = 1
 
-    # gaussian mixture model
-    plot_params_line['line']['distribution']['gmm']['prob'] = 1
-    plot_params_line['line']['distribution']['gmm']['histogram as line']['prob'] = 1
-    plot_params_line['line']['distribution']['gmm']['nclusters'] = {'min': 1, 'max': 5}
-    plot_params_line['line']['distribution']['gmm']['nsamples'] = {'min': 10, 'max': 50}
+        # gaussian mixture model
+        plot_params_line['line']['distribution']['gmm']['prob'] = 1
+        plot_params_line['line']['distribution']['gmm']['histogram as line']['prob'] = 1
+        plot_params_line['line']['distribution']['gmm']['nclusters'] = {'min': 1, 'max': 5}
+        plot_params_line['line']['distribution']['gmm']['nsamples'] = {'min': 10, 'max': 50}
 
-    # linear plots
-    plot_params_line['line']['distribution']['linear']['prob'] = 1
+        # linear plots
+        plot_params_line['line']['distribution']['linear']['prob'] = 1
 
-    # Prob for getting line
-    plot_params_line['line']['prob'] = 1
+        # Prob for getting line
+        plot_params_line['line']['prob'] = 1
 
     ### Histograms
     #linestyles_hist = ['-', ':'] # only use a subset of the linestyles
     linestyles_hist = ['-'] # only use a subset of the linestyles
 
-    plot_params_line['histogram'] = plot_params['histogram'].copy()
+    if 'histogram' in plot_params:
+        plot_params_line['histogram'] = plot_params['histogram'].copy()
 
-    # no horizontal plots
-    plot_params_line['histogram']['horizontal prob'] = 0.0
+        # no horizontal plots
+        plot_params_line['histogram']['horizontal prob'] = 0.0
 
-    # random distributions
-    plot_params_line['histogram']['distribution']['random']['prob'] = 1
+        # random distributions
+        plot_params_line['histogram']['distribution']['random']['prob'] = 1
 
-    # gaussian mixture model
-    plot_params_line['histogram']['distribution']['gmm']['prob'] = 1
-    plot_params_line['histogram']['distribution']['gmm']['nclusters'] = {'min': 1, 'max': 5}
-    plot_params_line['histogram']['distribution']['gmm']['nsamples'] = {'min': 10, 'max': 500}
+        # gaussian mixture model
+        plot_params_line['histogram']['distribution']['gmm']['prob'] = 1
+        plot_params_line['histogram']['distribution']['gmm']['nclusters'] = {'min': 1, 'max': 5}
+        plot_params_line['histogram']['distribution']['gmm']['nsamples'] = {'min': 10, 'max': 500}
 
-    # linear distributions prob
-    plot_params_line['histogram']['distribution']['linear']['prob'] = 1
+        # linear distributions prob
+        plot_params_line['histogram']['distribution']['linear']['prob'] = 1
 
-    # prob for getting a histogram
-    plot_params_line['histogram']['prob'] = 1
+        # prob for getting a histogram
+        plot_params_line['histogram']['prob'] = 1
 
     ### Contours
-    plot_params_line['contour'] = plot_params['contour'].copy()
+    if 'contour' in plot_params:
+        plot_params_line['contour'] = plot_params['contour'].copy()
 
-    plot_params_line['contour']['nlines']['min'] = 1
-    plot_params_line['contour']['nlines']['max'] = 5
+        plot_params_line['contour']['nlines']['min'] = 1
+        plot_params_line['contour']['nlines']['max'] = 5
 
-    # lower resolution?
-    plot_params_line['contour']['npoints']  = {'nx':{'min':10,'max':100}, 'ny':{'min':10,'max':100}}
+        # lower resolution?
+        plot_params_line['contour']['npoints']  = {'nx':{'min':10,'max':100}, 'ny':{'min':10,'max':100}}
 
-    # prob of getting a contour plot
-    plot_params_line['contour']['prob'] = 1
+        # prob of getting a contour plot
+        plot_params_line['contour']['prob'] = 1
 
 
     ### Images of the sky
-    plot_params_line['image of the sky'] = plot_params['image of the sky'].copy()
+    if 'image of the sky' in plot_params:
+        plot_params_line['image of the sky'] = plot_params['image of the sky'].copy()
 
-    # lines if overplotting like with contours
-    plot_params_line['image of the sky']['nlines']['min'] = 1
-    plot_params_line['image of the sky']['nlines']['max'] = 5
+        # lines if overplotting like with contours
+        plot_params_line['image of the sky']['nlines']['min'] = 1
+        plot_params_line['image of the sky']['nlines']['max'] = 5
 
-    # if image of sky, use an "image of the sky" from astroquery or a GMM distribution?
-    plot_params_line['image of the sky']['distribution']['gmm']['prob'] = 1 
-    plot_params_line['image of the sky']['distribution']['sky']['prob'] = 1
+        # if image of sky, use an "image of the sky" from astroquery or a GMM distribution?
+        plot_params_line['image of the sky']['distribution']['gmm']['prob'] = 1 
+        plot_params_line['image of the sky']['distribution']['sky']['prob'] = 1
 
-    # if querying with astroquery, where are tables (object+wavelengths) and storage of already downloaded files?
-    # 1. these contain combos of object + wavelength from our historical corpus
-    plot_params_line['image of the sky']['distribution']['sky']['object wavelength table'] = fullproc_r + '/object_wavelength_pairs.pickle'
-    # where to store images once they have been queried & downloaded
-    plot_params_line['image of the sky']['distribution']['sky']['query images dir'] = astroquery_img_dir
+        # if querying with astroquery, where are tables (object+wavelengths) and storage of already downloaded files?
+        # 1. these contain combos of object + wavelength from our historical corpus
+        plot_params_line['image of the sky']['distribution']['sky']['object wavelength table'] = fullproc_r + '/object_wavelength_pairs.pickle'
+        # where to store images once they have been queried & downloaded
+        plot_params_line['image of the sky']['distribution']['sky']['query images dir'] = astroquery_img_dir
 
-    # image or lines
-    plot_params_line['image of the sky']['image or contour']['prob']['image'] = 1000
+        # image or lines
+        plot_params_line['image of the sky']['image or contour']['prob']['image'] = 1000
 
-    # lower resolution?
-    plot_params_line['image of the sky']['npoints']  = {'nx':{'min':10,'max':100}, 'ny':{'min':10,'max':100}}
+        # lower resolution?
+        plot_params_line['image of the sky']['npoints']  = {'nx':{'min':10,'max':100}, 'ny':{'min':10,'max':100}}
 
-    # prob of getting an image of the sky
-    plot_params_line['image of the sky']['prob'] = 1
+        # prob of getting an image of the sky
+        plot_params_line['image of the sky']['prob'] = 1
 
 
     ### Other params
