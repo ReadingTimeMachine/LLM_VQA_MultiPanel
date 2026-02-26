@@ -44,6 +44,7 @@ astroquery_img_dir = args.astroquery_img_dir
 save_diagnostic_plot = args.save_diagnostic_plot
 timeout = args.time_out
 restart = args.restart
+verbose = args.verbose
 grace_ticks = args.grace_ticks
 itriesMax = args.max_tries
 ifigures_max = args.number_of_figures
@@ -127,6 +128,23 @@ my_storage = {}
 
 for sto, ifigure in parallel_objects(ifigures, nProcs,storage=my_storage):
     sto.result_id = ifigure
+
+    # check if we have it
+    print('')
+    if verbose:
+        print('*************** Figure', ifigure+1, '****************')
+    # check if there for all formats
+    hasFig = []
+    for iformat in img_format:
+        if os.path.exists(fake_figs_dir + 'imgs/Picture_' + str(ifigure+1).zfill(6) + '.'+iformat):
+            hasFig.append(iformat)
+    # and json
+    if os.path.exists(fake_figs_dir + 'jsons/Picture_' + str(ifigure+1).zfill(6) + '.json'):
+        hasFig.append('json')
+    if (len(hasFig) == len(img_format) + 1) and not restart: # extra 1 for json
+        if verbose:
+            print('  already have:', fake_figs_dir + 'imgs/Picture_' + str(ifigure+1).zfill(6) + '.<FMT>')
+        continue
 
     diagsout = make_random_plot(fake_figs_dir = fake_figs_dir, ifigure=ifigure)
 
