@@ -9,7 +9,7 @@ parser.add_argument("-arxiv_dir", nargs='?', default="~/Dropbox/wwt_image_extrac
 #parser.add_argument("-save_jsons_dir", nargs='?', default="/Users/jnaiman/Dropbox/wwt_image_extraction/FullProcess_resources/arxiv_new_json_test/") # JPN HERE
 parser.add_argument("-save_dir", nargs='?', default="~/Dropbox/jcdl_followup/synthetic_figures/") 
 parser.add_argument("-nProcs", nargs='?', default=2)
-parser.add_argument("-number_of_figures", nargs='?', default=7)
+parser.add_argument("-number_of_figures", nargs='?', default=200)
 
 
 
