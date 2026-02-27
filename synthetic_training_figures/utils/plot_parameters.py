@@ -12,8 +12,8 @@ panel_params = {
     'number prob': {
         'min':1, # minimum number of panels
         'max':25, # maximum number of panels
-        'median':4,
-        'std':10
+        'median':6,
+        'std':15
     },
     'layout prob':{'horizontal':0.5,'vertical':0.25, 'squarish':0.25}, # probability things are horizontal, vertical, square-ish
     'to even above':5 # above this amount, panels will be put into a square-ish shape
