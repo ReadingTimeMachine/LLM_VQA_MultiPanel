@@ -58,6 +58,7 @@ timeout_seconds = timeout*60
 from utils.main_plot_utils import make_random_plot
 import matplotlib.pyplot as plt
 import numpy as np
+import gc
 
 import matplotlib as mpl
 # need to use non-interactive!
@@ -147,6 +148,7 @@ for sto, ifigure in parallel_objects(ifigures, nProcs,storage=my_storage):
         continue
 
     diagsout = make_random_plot(fake_figs_dir = fake_figs_dir, ifigure=ifigure)
+    gc.collect()
 
 
 
