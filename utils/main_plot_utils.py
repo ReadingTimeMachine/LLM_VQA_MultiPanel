@@ -761,17 +761,6 @@ def make_random_plot(figure = None, verbose=True,
             success_save = False
             figure = check_exceptions(esave, figure, error_front=' saving figure failed -- ', **kwargs)
 
-            # success_plot, rng_dict, seeds_dict, figure_params, \
-            #     font_params, xlabels_pull, ylabels_pull, \
-            #         titles_pull, data_save, \
-            #             success_flags = check_exceptions1(esave, fontsizes, 
-            #                                             font_names, 
-            #                 rng_dict, seeds_dict, figure_params, font_params, 
-            #                 xlabels_pull, ylabels_pull, titles_pull, 
-            #                 data_save, success_flags,color_maps, plot_styles, 
-            #         aspect_fig_params, dpi_params, panel_params, tight_layout_params,popular_nouns,
-            #                 verbose = True, error_front=' saving figure failed -- ')
-
         if not success_save:
             continue
 
@@ -786,15 +775,7 @@ def make_random_plot(figure = None, verbose=True,
                                 cbar_ax=cbar_ax,
                                 colorbar_verbose=False,
                                 verbose=True)
-                # datas['plot' + str(iplot)], err = collect_plot_data_axes(ax, fig,
-                #                 height, width,
-                #                 data_save['data_from_plots'][iplot], 
-                #                 data_save['data_for_plots'][iplot], 
-                #                 data_save['plot_types'][iplot], data_save['titles'][iplot], 
-                #                 data_save['xlabels'][iplot], data_save['ylabels'][iplot],
-                #                 data_save['distribution_types'][iplot], cbar_ax=cbar_ax,
-                #                 colorbar_verbose=False,
-                #                 verbose=True)#, error_out=False)
+
             # one extra
             datas['figure']['figsize'] = figure.data_save['figsize']
             datas['figure']['facecolor'] = figure.figure_params['facecolor']
@@ -806,16 +787,7 @@ def make_random_plot(figure = None, verbose=True,
                 success_fill_data = False
                 plt.close('all')
                 # have to reset everybody
-                #figure = FigureRun()
                 figure = reset_figure(**kwargs)
-                # rng_dict, seeds_dict, figure_params, \
-                #     font_params, xlabels_pull, ylabels_pull, \
-                #         titles_pull, data_save, success_flags = reset_everybody(color_maps, plot_styles, 
-                #                                                  aspect_fig_params, dpi_params, 
-                #                                                  panel_params, tight_layout_params, 
-                #                                                  fontsizes, font_names, popular_nouns, success_flags)
-                # del fig, datas, data_save,  axes_from_loop, axes_save, \
-                #         cbar_axes_save, cbars, plot_data_all, plot_data
                 try:
                     del fig
                     del datas
@@ -838,14 +810,6 @@ def make_random_plot(figure = None, verbose=True,
                 plt.close('all')
                 #figure = FigureRun()
                 figure = reset_figure(**kwargs)
-                # rng_dict, seeds_dict, figure_params, \
-                #     font_params, xlabels_pull, ylabels_pull, \
-                #         titles_pull, data_save, success_flags = reset_everybody(color_maps, plot_styles, 
-                #                                                  aspect_fig_params, dpi_params, 
-                #                                                  panel_params, tight_layout_params, 
-                #                                                  fontsizes, font_names, popular_nouns, success_flags)
-                # del fig, datas, data_save,  axes_from_loop, axes_save, \
-                #         cbar_axes_save, cbars, plot_data_all, plot_data
                 try:
                     del fig
                     del datas
@@ -878,14 +842,6 @@ def make_random_plot(figure = None, verbose=True,
             # have to reset everybody
             #figure = FigureRun()
             figure = reset_figure(**kwargs)
-            # rng_dict, seeds_dict, figure_params, \
-            #     font_params, xlabels_pull, ylabels_pull, \
-            #         titles_pull, data_save, success_flags = reset_everybody(color_maps, plot_styles, 
-            #                                                     aspect_fig_params, dpi_params, 
-            #                                                     panel_params, tight_layout_params, 
-            #                                                     fontsizes, font_names, popular_nouns, success_flags)
-            # del fig, datas, data_save,  axes_from_loop, axes_save, \
-            #             cbar_axes_save, cbars, plot_data_all, plot_data
             gc.collect()
             #data_save = create_data_save_dict()
             try:
