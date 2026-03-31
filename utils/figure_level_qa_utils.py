@@ -303,3 +303,4 @@ def figure_level_qa(data, qa_pairs, plot_types, verbose=False):
     qa_pairs = q_ticklabels(data, qa_pairs, axis='y', verbose=verbose)
     qa_pairs = q_plot_types(data, qa_pairs, plot_types, use_list=True, verbose=verbose)
     qa_pairs = q_plot_types(data, qa_pairs, plot_types, use_list=False, verbose=verbose)
+    return qa_pairs
