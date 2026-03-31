@@ -146,6 +146,17 @@ def get_adder(nplots, use_words, use_list=False, use_nlines=False):
     return adder
 
 
+def get_format_adder(object, big_tag, val_type = 'an integer', nplots = 1, 
+             use_words=True, to_generate=False, use_list=False):
+    """
+    to_generate : flag for wording
+    """
+    adder = get_adder(nplots, use_words, use_list=use_list)
+    # formatting for output
+    format = 'Please format the output as a json as {"'+big_tag+'":""} for this figure panel, where the "'+big_tag+'" value should be '+val_type+'.'
+    return adder, format
+
+
 def how_many(object, big_tag, val_type = 'an integer', nplots = 1, 
              use_words=True, to_generate=False):
     """
