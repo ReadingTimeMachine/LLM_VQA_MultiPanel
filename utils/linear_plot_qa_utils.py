@@ -309,7 +309,7 @@ def q_relationship_lines(data, qa_pairs, plot_num = 0, return_qa=True, use_words
         text_context += 'total of ' +str(int(len(data['plot' + str(plot_num)]['data']['ys'])))+ ' entries. '
     # if use list of options
     if use_list:
-        text_context += 'Please choose each '+big_tag+' for each line from the following list for each line: ['
+        text_context += ' Please choose each '+big_tag+' for each line from the following list for each line: ['
         for pt in line_list:
             text_context += pt + ', '
         text_context = text_context[:-2] # take off the last bit

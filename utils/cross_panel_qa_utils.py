@@ -53,6 +53,7 @@ def calc_strongest(data, verbose=False):
 
 
 #### L3(?) ####
+# for only lines and scatters
 def q_strongest_relationship(data, qa_pairs, 
                                return_qa=True, verbose=True, use_list=True,
                                single_figure_flag=True, 
