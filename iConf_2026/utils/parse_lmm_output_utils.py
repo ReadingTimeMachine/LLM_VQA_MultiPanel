@@ -6,6 +6,111 @@ from copy import deepcopy
 import re
 
 
+# claude suggestions
+def parse_llm_dual_json(output: str) -> tuple[dict | None, dict | None]:
+    """
+    Parse LLM output containing an answer JSON and optional explanation JSON.
+    
+    Returns:
+        (answer_dict, explanation_dict) — either can be None on failure
+    """
+    output = output.strip()
+    
+    # Strategy 1: Find all valid JSON objects via brace matching
+    def extract_json_objects(text):
+        objects = []
+        depth = 0
+        start = None
+        in_string = False
+        escape_next = False
+        
+        for i, ch in enumerate(text):
+            if escape_next:
+                escape_next = False
+                continue
+            if ch == '\\' and in_string:
+                escape_next = True
+                continue
+            if ch == '"' and not escape_next:
+                in_string = not in_string
+            if in_string:
+                continue
+            if ch == '{':
+                if depth == 0:
+                    start = i
+                depth += 1
+            elif ch == '}':
+                depth -= 1
+                if depth == 0 and start is not None:
+                    objects.append(text[start:i+1])
+                    start = None
+        return objects
+    
+    raw_objects = extract_json_objects(output)
+    
+    parsed = []
+    for obj_str in raw_objects:
+        # Strategy 2: Try strict parse first, then relaxed fixes
+        candidate = None
+        
+        # 2a. Strict JSON
+        try:
+            candidate = json.loads(obj_str)
+        except json.JSONDecodeError:
+            pass
+        
+        # 2b. Replace single quotes with double quotes (common LLM mistake)
+        if candidate is None:
+            try:
+                fixed = re.sub(r"(?<![\\])'", '"', obj_str)
+                candidate = json.loads(fixed)
+            except (json.JSONDecodeError, Exception):
+                pass
+        
+        # 2c. Strip trailing commas before } or ]
+        if candidate is None:
+            try:
+                fixed = re.sub(r',\s*([}\]])', r'\1', obj_str)
+                candidate = json.loads(fixed)
+            except (json.JSONDecodeError, Exception):
+                pass
+        
+        # 2d. Sanitize unescaped quotes inside string values
+        if candidate is None:
+            try:
+                fixed = re.sub(r':\s*"(.*?)"(?=\s*[,}])', 
+                               lambda m: ': "' + m.group(1).replace('"', '\\"') + '"',
+                               obj_str, flags=re.DOTALL)
+                candidate = json.loads(fixed)
+            except (json.JSONDecodeError, Exception):
+                pass
+        
+        if candidate is not None:
+            parsed.append(candidate)
+    
+    # Strategy 3: Classify parsed objects into answer vs. explanation
+    answer, explanation = None, None
+    explanation_keys = {"explanation", "reason", "reasoning", "rationale"}
+    
+    for obj in parsed:
+        if any(k in obj for k in explanation_keys):
+            explanation = obj
+        else:
+            answer = obj
+    
+    # Strategy 4: Fallback — if only one object found, decide which it is
+    if len(parsed) == 1:
+        obj = parsed[0]
+        if any(k in obj for k in explanation_keys):
+            explanation = obj
+        else:
+            answer = obj
+    
+    answer_str = json.dumps(answer) if answer is not None else None
+
+    return answer_str, explanation
+
+
 def parse_first_json(text):
     decoder = json.JSONDecoder()
     obj, idx = decoder.raw_decode(text)
@@ -38,12 +143,14 @@ def fix_latex_math(json_str):
 
 
 def parse_json_files(dirnames, dirs, files_parsed, dir_jsons, 
-                     verbose=True):
+                     verbose=True, use_explanation=False):
     dfdict = {}
     for flag in ['image id', 'plot number', 'plot type', 'question', 
                 'use list', 'model', 'model id', 'LMM Answer', 'GT Answer', 
                 'Level', 'Level Type']: #, 'plot types']:
         dfdict[flag] = []
+    if use_explanation:
+        dfdict['Explanation'] = []
     for ifile,(dn,dr) in enumerate(zip(dirnames, dirs)):
         if verbose:
             print('')
@@ -100,11 +207,22 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                     jgt = {q:jgt}
                 # llm
                 raw_ans_in = qa['raw answer']
+                print("RAW ANS")
+                print(raw_ans_in)
+                if use_explanation: # has explaination and needs to be stripped
+                    answer, explanation = parse_llm_dual_json(raw_ans_in)
+                    raw_ans_in = answer #str(answer)
+                print("OUTPUT")
+                print(raw_ans_in)#, type(raw_ans_in))
+                # print('exp')
+                # print(explanation)
+                # import sys; sys.exit()
                 jllm = {}
                 raw_ans = raw_ans_in.replace('^', 'e') # math notation
                 raw_ans = raw_ans.replace('**','e')
                 raw_ans = re.sub(r'(\d*\.?\d+e)\s*\(\s*-\s*(\d+)\s*\)', r'\1-\2', raw_ans)
                 raw_ans = raw_ans.replace('True', 'true').replace('False', 'false')
+                print('raw_ans', raw_ans)
                 if '`' not in raw_ans:
                     try:
                         jllm = json.loads(raw_ans)
@@ -211,6 +329,8 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                     j2 = {'title':jllm['titles']}
                     jllm = deepcopy(j2)
                 if 'aspect ratio' in jllm:
+                    if "(" in jllm['aspect ratio']:
+                        jllm['aspect ratio'] = jllm['aspect ratio'].split('(')[0]
                     if ':' in jllm['aspect ratio']:
                         ar = float(jllm['aspect ratio'].split(':')[0])/float(jllm['aspect ratio'].split(':')[1])
                         jllm['aspect ratio'] = ar
@@ -279,6 +399,8 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
 
                 dfdict['LMM Answer'].append(jllm)
                 dfdict['GT Answer'].append(jgt)
+                if use_explanation:
+                    dfdict['Explanation'].append(explanation)
                     
                 
     df = pd.DataFrame(dfdict)
