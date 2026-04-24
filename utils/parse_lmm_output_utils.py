@@ -581,7 +581,7 @@ def fix_latex_math(json_str):
 
 
 def parse_json_files(dirnames, dirs, files_parsed, dir_jsons, 
-                     verbose=True, use_explanation=False):
+                     verbose=True, use_explanation=False, ignore_please_choose=True):
     dfdict = {}
     for flag in ['image id', 'plot number', 'plot type', 'question', 
                 'use list', 'model', 'model id', 'LMM Answer', 'GT Answer', 
@@ -612,7 +612,10 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
             for qa in data:
                 # make row/file
                 dfdict['image id'].append(f.removesuffix('.pickle'))
-                dfdict['question'].append(qa['question'])
+                question = qa['question']
+                if ignore_please_choose:
+                    question = question.split('Please choose from ')[0].rstrip().lstrip()
+                dfdict['question'].append(question)
                 dfdict['model'].append(dn)
                 dfdict['model id'].append(model)
                 dfdict['Level'].append(qa['Level'])
