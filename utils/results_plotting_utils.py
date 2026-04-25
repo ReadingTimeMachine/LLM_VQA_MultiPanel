@@ -209,3 +209,132 @@ def calculate_plot_accuracies(df, questions_figure, df_question_tags,
         df_F_question_tags['Type'].append(ltype)
 
     return df_F_question_tags, dfplot
+
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import math
+
+def make_square_grid_figure(n_plots, figsize_per_plot=(3, 3), **fig_kwargs):
+    """
+    Create a figure with n_plots axes of identical size, arranged as
+    squarely as possible.
+
+    Layout rules:
+    - Rows may have different column counts (last row can have fewer).
+    - All axes have the same width and height.
+    - Axes in a full row share the same x/y grid positions (alignable).
+    - Axes in a short row are horizontally centered.
+    - Returns (fig, axes) where axes is a flat list of length n_plots.
+
+    Parameters
+    ----------
+    n_plots : int
+        Number of axes to create.
+    figsize_per_plot : (float, float)
+        Width and height (in inches) of each individual subplot.
+    **fig_kwargs
+        Extra keyword arguments forwarded to plt.figure().
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+    axes : list of matplotlib.axes.Axes, length n_plots
+    """
+    if n_plots < 1:
+        raise ValueError("n_plots must be at least 1")
+
+    # --- determine grid dimensions ---
+    ncols = math.ceil(math.sqrt(n_plots))   # columns in a full row
+    nrows = math.ceil(n_plots / ncols)
+
+    pw, ph = figsize_per_plot
+    fig_w = pw * ncols
+    fig_h = ph * nrows
+    # fig = plt.figure(figsize=(fig_w, fig_h), **fig_kwargs)
+    fig = plt.figure(figsize=(fig_w, fig_h), layout="constrained", **fig_kwargs)
+
+    axes = []
+    for row in range(nrows):
+        # how many plots live in this row?
+        first_in_row = row * ncols
+        n_this_row = min(ncols, n_plots - first_in_row)
+
+        # fractional width/height of one cell in figure coordinates
+        cell_w = 1.0 / ncols
+        cell_h = 1.0 / nrows
+
+        # vertical position (top-down)
+        y0 = 1.0 - (row + 1) * cell_h
+
+        # horizontal offset so a short row is centered
+        x_start = (1.0 - n_this_row * cell_w) / 2.0
+
+        for col in range(n_this_row):
+            x0 = x_start + col * cell_w
+
+            # small margin so axes don't touch each other or the figure edge
+            margin = 0.04
+            ax = fig.add_axes([
+                x0 + margin * cell_w,
+                y0 + margin * cell_h,
+                cell_w * (1 - 2 * margin),
+                cell_h * (1 - 2 * margin),
+            ])
+            axes.append(ax)
+
+    return fig, axes
+
+
+# import matplotlib.pyplot as plt
+# import matplotlib.gridspec as gridspec
+# import math
+
+def make_square_grid_figure_gs(n_plots, figsize_per_plot=(3, 3),
+                            hspace=0.4, wspace=0.4, **fig_kwargs):
+    if n_plots < 1:
+        raise ValueError("n_plots must be at least 1")
+
+    ncols = math.ceil(math.sqrt(n_plots))
+    nrows = math.ceil(n_plots / ncols)
+    n_last_row = n_plots - (nrows - 1) * ncols
+    last_row_is_short = n_last_row < ncols
+
+    pw, ph = figsize_per_plot
+    fig = plt.figure(figsize=(pw * ncols, ph * nrows), **fig_kwargs)
+
+    # One GridSpec for the whole figure
+    gs = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=hspace, wspace=wspace)
+
+    axes = []
+
+    # All full rows — standard subplot cells
+    full_rows = nrows - 1 if last_row_is_short else nrows
+    for row in range(full_rows):
+        for col in range(ncols):
+            ax = fig.add_subplot(gs[row, col])
+            axes.append(ax)
+
+    # Short last row — center it by spanning columns symmetrically
+    if last_row_is_short:
+        # Figure out which columns to occupy for centering.
+        # We nest a sub-GridSpec inside a merged cell span.
+        empty_cols = ncols - n_last_row
+        left_empty = empty_cols // 2      # columns to leave blank on the left
+        right_empty = empty_cols - left_empty
+
+        col_start = left_empty
+        col_end = ncols - right_empty     # exclusive
+
+        # Nest a GridSpec inside the merged last-row span
+        sub_gs = gridspec.GridSpecFromSubplotSpec(
+            1, n_last_row,
+            subplot_spec=gs[nrows - 1, col_start:col_end],
+            hspace=hspace,
+            wspace=wspace,
+        )
+        for col in range(n_last_row):
+            ax = fig.add_subplot(sub_gs[0, col])
+            axes.append(ax)
+
+    fig.tight_layout()   # now works without warnings
+    return fig, axes
