@@ -43,8 +43,9 @@ def figure_qa_plotting_style(data, qa_pairs, return_qa=True, verbose=True,
 
     ### persona of assistant
     text_persona = persona(text=text_persona)
-    # context for question
-    text_context = 'Assume this is a figure made with matplotlib in Python.  Examples of plotting styles are "classic" or "ggplot". Examples of plotting styles are "classic" or "ggplot".' # full figure but context
+    # context for question -- was accidentally repeated!
+#    text_context = 'Assume this is a figure made with matplotlib in Python.  Examples of plotting styles are "classic" or "ggplot". Examples of plotting styles are "classic" or "ggplot".' # full figure but context
+    text_context = 'Assume this is a figure made with matplotlib in Python.  Examples of plotting styles are "classic" or "ggplot".' # full figure but context
 
     text_question = 'What is the plot style used in this figure?'
     text_format = 'Please format the output as a json as {"plot style":""} to store the matplotlib plotting style used in the figure.'
