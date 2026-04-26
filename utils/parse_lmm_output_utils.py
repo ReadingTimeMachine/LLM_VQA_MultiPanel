@@ -741,14 +741,33 @@ def get_lmm_gt(dfsub2, type, verbose=True):
         gt = np.array(gt)
         for v in dfsub2['LMM Answer'].values: # v = {'mean': 5.0}
             l = list(v.values())[0]
+            #print('LMM values:', l)
+            #if isinstance(l,list):
             if l is None:
                 l = np.nan
             if isinstance(l,list):
+                if isinstance(l[0],str):
+                    #print('LMM LIST STR:',l)
+                    # try to collapse:
+                    l2 = "".join(l)
+                    #print('collapsed:', l2)
+                    try:
+                        #l = float(l2.strip('[]'))
+                        l = json.loads(l2)
+                    except:
+                        if verbose:
+                            print('[WARNING]: could not convert -- ', l2)
+                        l = np.nan
+                    #l = [l]
+                    #print('Lsub:',l)
                 lmm.extend(l)
             else:
                 lmm.append(l)
         #print('LMM:', lmm)
         lmm = np.array(lmm)
+        # sub
+        # lmm = lmm[lmm!=']']
+        # lmm = lmm[lmm!='[']
         gt = np.array(gt)
         if len(lmm) < len(gt):
             lmm = align_arrays_safe(gt, lmm)
@@ -756,7 +775,9 @@ def get_lmm_gt(dfsub2, type, verbose=True):
             #print('WONT WORK')
             if verbose:
                 print('[WARNING]: have to delete GT to align')
-            gt = align_arrays_safe(lmm,gt)
+            #print("GT:", gt)
+            #print("LMM:",lmm)
+            gt = align_arrays_safe(lmm.astype('float'),gt.astype('float'))
     elif type == 'string list' or type == 'binary string list':
         gt = []; lmm = []
         # have to do at same time to match lists
