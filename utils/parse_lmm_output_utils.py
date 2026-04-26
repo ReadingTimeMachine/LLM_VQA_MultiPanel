@@ -4,339 +4,6 @@ import pickle
 import numpy as np
 from copy import deepcopy
 import re
-
-
-# claude suggestions
-# def parse_llm_dual_json(output: str) -> tuple[dict | None, dict | None]:
-#     """
-#     Parse LLM output containing an answer JSON and optional explanation JSON.
-    
-#     Returns:
-#         (answer_dict, explanation_dict) — either can be None on failure
-#     """
-#     output = output.strip()
-    
-#     # Strategy 1: Find all valid JSON objects via brace matching
-#     def extract_json_objects(text):
-#         objects = []
-#         depth = 0
-#         start = None
-#         in_string = False
-#         escape_next = False
-        
-#         for i, ch in enumerate(text):
-#             if escape_next:
-#                 escape_next = False
-#                 continue
-#             if ch == '\\' and in_string:
-#                 escape_next = True
-#                 continue
-#             if ch == '"' and not escape_next:
-#                 in_string = not in_string
-#             if in_string:
-#                 continue
-#             if ch == '{':
-#                 if depth == 0:
-#                     start = i
-#                 depth += 1
-#             elif ch == '}':
-#                 depth -= 1
-#                 if depth == 0 and start is not None:
-#                     objects.append(text[start:i+1])
-#                     start = None
-#         return objects
-    
-#     raw_objects = extract_json_objects(output)
-    
-#     parsed = []
-#     for obj_str in raw_objects:
-#         # Strategy 2: Try strict parse first, then relaxed fixes
-#         candidate = None
-        
-#         # 2a. Strict JSON
-#         try:
-#             candidate = json.loads(obj_str)
-#         except json.JSONDecodeError:
-#             pass
-        
-#         # 2b. Replace single quotes with double quotes (common LLM mistake)
-#         if candidate is None:
-#             try:
-#                 fixed = re.sub(r"(?<![\\])'", '"', obj_str)
-#                 candidate = json.loads(fixed)
-#             except (json.JSONDecodeError, Exception):
-#                 pass
-        
-#         # 2c. Strip trailing commas before } or ]
-#         if candidate is None:
-#             try:
-#                 fixed = re.sub(r',\s*([}\]])', r'\1', obj_str)
-#                 candidate = json.loads(fixed)
-#             except (json.JSONDecodeError, Exception):
-#                 pass
-        
-#         # 2d. Sanitize unescaped quotes inside string values
-#         if candidate is None:
-#             try:
-#                 fixed = re.sub(r':\s*"(.*?)"(?=\s*[,}])', 
-#                                lambda m: ': "' + m.group(1).replace('"', '\\"') + '"',
-#                                obj_str, flags=re.DOTALL)
-#                 candidate = json.loads(fixed)
-#             except (json.JSONDecodeError, Exception):
-#                 pass
-        
-#         if candidate is not None:
-#             parsed.append(candidate)
-    
-#     # Strategy 3: Classify parsed objects into answer vs. explanation
-#     answer, explanation = None, None
-#     explanation_keys = {"explanation", "reason", "reasoning", "rationale"}
-    
-#     for obj in parsed:
-#         if any(k in obj for k in explanation_keys):
-#             explanation = obj
-#         else:
-#             answer = obj
-    
-#     # Strategy 4: Fallback — if only one object found, decide which it is
-#     if len(parsed) == 1:
-#         obj = parsed[0]
-#         if any(k in obj for k in explanation_keys):
-#             explanation = obj
-#         else:
-#             answer = obj
-    
-#     answer_str = json.dumps(answer) if answer is not None else None
-
-#     return answer_str, explanation
-
-# import json
-# import re
-
-# def parse_llm_dual_json(output: str) -> tuple[dict | None, dict | None]:
-#     output = output.strip()
-
-#     def extract_json_objects(text):
-#         """Extract candidate JSON object strings via brace matching."""
-#         objects = []
-#         depth = 0
-#         start = None
-#         in_string = False
-#         escape_next = False
-
-#         for i, ch in enumerate(text):
-#             if escape_next:
-#                 escape_next = False
-#                 continue
-#             if ch == '\\' and in_string:
-#                 escape_next = True
-#                 continue
-#             if ch == '"' and not escape_next:
-#                 in_string = not in_string
-#             if in_string:
-#                 continue
-#             if ch == '{':
-#                 if depth == 0:
-#                     start = i
-#                 depth += 1
-#             elif ch == '}':
-#                 depth -= 1
-#                 if depth == 0 and start is not None:
-#                     objects.append(text[start:i+1])
-#                     start = None
-#         return objects
-
-#     def try_parse(obj_str: str) -> dict | None:
-#         """Try to parse a JSON string with progressively more aggressive fixes."""
-
-#         # 1. Strict parse — handles valid JSON including LaTeX, lists, escaped chars
-#         try:
-#             return json.loads(obj_str)
-#         except json.JSONDecodeError:
-#             pass
-
-#         # 2. Strip trailing commas before } or ] (e.g. {"a":1,})
-#         try:
-#             fixed = re.sub(r',\s*([}\]])', r'\1', obj_str)
-#             return json.loads(fixed)
-#         except json.JSONDecodeError:
-#             pass
-
-#         # 3. Single quotes for dict keys/values ONLY (not inside strings)
-#         # Only attempt if no double quotes present — avoids breaking LaTeX
-#         if '"' not in obj_str:
-#             try:
-#                 fixed = re.sub(r"'", '"', obj_str)
-#                 return json.loads(fixed)
-#             except json.JSONDecodeError:
-#                 pass
-
-#         # 4. Fix unmatched/stray quotes in list elements or values.
-#         # Strategy: remove any quote that isn't preceded/followed by
-#         # a JSON structural character ( : , { } [ ] ) or whitespace.
-#         try:
-#             # Remove quotes that appear mid-token (not at boundaries)
-#             fixed = re.sub(r'(?<=[^\s,:\[{])\"(?=[^\s,:\]}\:])', '', obj_str)
-#             return json.loads(fixed)
-#         except json.JSONDecodeError:
-#             pass
-
-#         # 5. Last resort: ast.literal_eval for Python-dict-like output
-#         try:
-#             import ast
-#             result = ast.literal_eval(obj_str)
-#             if isinstance(result, dict):
-#                 return result
-#         except (ValueError, SyntaxError):
-#             pass
-
-#         return None
-
-#     raw_objects = extract_json_objects(output)
-
-#     parsed = []
-#     for obj_str in raw_objects:
-#         candidate = try_parse(obj_str)
-#         if candidate is not None:
-#             parsed.append(candidate)
-
-#     # Classify into answer vs explanation by key names
-#     answer, explanation = None, None
-#     explanation_keys = {"explanation", "reason", "reasoning", "rationale"}
-
-#     for obj in parsed:
-#         if any(k in obj for k in explanation_keys):
-#             explanation = obj
-#         else:
-#             answer = obj
-
-#     if len(parsed) == 1:
-#         obj = parsed[0]
-# #         if any(k in obj for k in explanation_keys):
-# #             explanation = obj
-# #         else:
-# #             answer = obj
-
-# #     answer_str = json.dumps(answer) if answer is not None else None
-# #     return answer_str, explanation
-
-# import json
-# import re
-# import ast
-
-# def parse_llm_dual_json(output: str) -> tuple[str | None, dict | None]:
-#     output = output.strip()
-
-#     def extract_json_objects(text):
-#         objects = []
-#         depth = 0
-#         start = None
-#         in_string = False
-#         escape_next = False
-
-#         for i, ch in enumerate(text):
-#             if escape_next:
-#                 escape_next = False
-#                 continue
-#             if ch == '\\' and in_string:
-#                 escape_next = True
-#                 continue
-#             if ch == '"' and not escape_next:
-#                 in_string = not in_string
-#             if in_string:
-#                 continue
-#             if ch == '{':
-#                 if depth == 0:
-#                     start = i
-#                 depth += 1
-#             elif ch == '}':
-#                 depth -= 1
-#                 if depth == 0 and start is not None:
-#                     objects.append(text[start:i+1])
-#                     start = None
-#         return objects
-
-#     def try_parse(obj_str: str) -> dict | None:
-#         try:
-#             return json.loads(obj_str)
-#         except json.JSONDecodeError:
-#             pass
-
-#         try:
-#             fixed = re.sub(r',\s*([}\]])', r'\1', obj_str)
-#             return json.loads(fixed)
-#         except json.JSONDecodeError:
-#             pass
-
-#         if '"' not in obj_str:
-#             try:
-#                 fixed = re.sub(r"'", '"', obj_str)
-#                 return json.loads(fixed)
-#             except json.JSONDecodeError:
-#                 pass
-
-#         try:
-#             fixed = re.sub(r'(?<=[^\s,:\[{])\"(?=[^\s,:\]}\:])', '', obj_str)
-#             return json.loads(fixed)
-#         except json.JSONDecodeError:
-#             pass
-
-#         try:
-#             result = ast.literal_eval(obj_str)
-#             if isinstance(result, dict):
-#                 return result
-#         except (ValueError, SyntaxError):
-#             pass
-
-#         return None
-
-#     def split_combined(obj: dict, explanation_keys: set) -> tuple[dict, dict | None]:
-#         """If a single object contains both answer keys and explanation keys, split them."""
-#         expl = {k: v for k, v in obj.items() if k in explanation_keys}
-#         answer = {k: v for k, v in obj.items() if k not in explanation_keys}
-#         return answer if answer else None, expl if expl else None
-
-#     explanation_keys = {"explanation", "reason", "reasoning", "rationale"}
-
-#     raw_objects = extract_json_objects(output)
-
-#     parsed = []
-#     for obj_str in raw_objects:
-#         candidate = try_parse(obj_str)
-#         if candidate is not None:
-#             parsed.append(candidate)
-
-#     answer, explanation = None, None
-
-#     if len(parsed) == 0:
-#         pass  # nothing recoverable
-
-#     elif len(parsed) == 1:
-#         obj = parsed[0]
-#         has_explanation = any(k in obj for k in explanation_keys)
-#         has_answer = any(k not in explanation_keys for k in obj)
-
-#         if has_explanation and has_answer:
-#             # Mixed object — split it
-#             answer, explanation = split_combined(obj, explanation_keys)
-#         elif has_explanation:
-#             explanation = obj
-#         else:
-#             answer = obj
-
-#     else:
-#         for obj in parsed:
-#             if any(k in obj for k in explanation_keys):
-#                 explanation = obj
-#             else:
-#                 answer = obj
-
-#     answer_str = json.dumps(answer) if answer is not None else None
-#     return answer_str, explanation
-
-
-import json
-import re
 import ast
 
 PLACEHOLDER = "PARSE_ERROR"
@@ -1016,6 +683,43 @@ def count_nan(lmm):
     return calc_nan
 
 
+def align_arrays_safe(arr1, arr2):
+    n, m = len(arr1), len(arr2)
+    assert m <= n, "arr2 cannot be longer than arr1 (can only insert, not delete)"
+
+    INF = float('inf')
+    dp = np.full((n + 1, m + 1), INF)
+    choice = np.zeros((n + 1, m + 1), dtype=int)  # 0=match, 1=insert NaN
+    
+    for i in range(n + 1):
+        dp[i][0] = 0.0
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            cost_match = dp[i-1][j-1] + abs(arr1[i-1] - arr2[j-1])
+            cost_insert = dp[i-1][j]
+            if cost_match <= cost_insert:
+                dp[i][j] = cost_match
+                choice[i][j] = 0  # match
+            else:
+                dp[i][j] = cost_insert
+                choice[i][j] = 1  # insert NaN
+
+    # Traceback
+    aligned = []
+    i, j = n, m
+    while i > 0:
+        if j > 0 and choice[i][j] == 0:
+            aligned.append(arr2[j-1])
+            i -= 1; j -= 1
+        else:
+            aligned.append(np.nan)
+            i -= 1
+
+    aligned.reverse()
+    return np.array(aligned)
+
+
 def get_lmm_gt(dfsub2, type, verbose=True):
     if type == 'binary string':
         gt = []; lmm = []
@@ -1028,15 +732,31 @@ def get_lmm_gt(dfsub2, type, verbose=True):
     elif type == 'float' or type == 'float per panel':
         gt = []; lmm = []
         for v in dfsub2['GT Answer'].values:
-            gt.append(list(v.values())[0])
+            g = list(v.values())[0]
+            if isinstance(g,list):
+                gt.extend(g)
+            else:
+                gt.append(g)
+        #print('GT:',gt)
         gt = np.array(gt)
         for v in dfsub2['LMM Answer'].values: # v = {'mean': 5.0}
             l = list(v.values())[0]
             if l is None:
                 l = np.nan
-            lmm.append(l)
+            if isinstance(l,list):
+                lmm.extend(l)
+            else:
+                lmm.append(l)
+        #print('LMM:', lmm)
         lmm = np.array(lmm)
         gt = np.array(gt)
+        if len(lmm) < len(gt):
+            lmm = align_arrays_safe(gt, lmm)
+        else:
+            #print('WONT WORK')
+            if verbose:
+                print('[WARNING]: have to delete GT to align')
+            gt = align_arrays_safe(lmm,gt)
     elif type == 'string list' or type == 'binary string list':
         gt = []; lmm = []
         # have to do at same time to match lists
