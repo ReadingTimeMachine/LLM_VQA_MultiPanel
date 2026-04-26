@@ -99,6 +99,7 @@ def calculate_plot_accuracies(df, questions_figure, df_question_tags,
     use_float_average = True # if so, will divide floats by average gt
 
     dfplot = {'Tag':[]}
+    
 
     # fill level and level types
     for iq,q in enumerate(questions_figure):
@@ -117,6 +118,7 @@ def calculate_plot_accuracies(df, questions_figure, df_question_tags,
                     lmm.append(l['nrows']*l['ncols'])
                 # fill
                 dfplot[model + ' ' + q['tag']].extend(lmm)
+        # include gt
         dfplot[q['tag'] + ' GT'].extend(gt)
         dfplot['Tag'].extend([q['tag']]*len(gt))
         #df_question_tags['Level'].append(np.unique(dfsub['Level'])[0])
@@ -140,6 +142,8 @@ def calculate_plot_accuracies(df, questions_figure, df_question_tags,
                         calc.append(0)
                 # fill
                 dfplot[model + ' ' + q['tag']].extend(calc)
+                # gt
+                #dfplot[q['tag'] + ' GT'].extend(gt)
 
             elif q['type'] == 'string list':
                 # loop over every figure
@@ -175,6 +179,7 @@ def calculate_plot_accuracies(df, questions_figure, df_question_tags,
                 else:
                     calc = deepcopy(lmm1)       
                 dfplot[model + ' ' + q['tag']].extend(calc) # 1 - so closer to other acc
+                #dfplot[q['tag'] + ' GT'].extend(gt)
                 
             elif q['type'] == 'binary string list':
                 calc = []
