@@ -445,7 +445,12 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                     if "(" in jllm['aspect ratio']:
                         jllm['aspect ratio'] = jllm['aspect ratio'].split('(')[0]
                     if ':' in jllm['aspect ratio']:
-                        ar = float(jllm['aspect ratio'].split(':')[0])/float(jllm['aspect ratio'].split(':')[1])
+                        ans = jllm['aspect ratio']
+                        ans = ans.replace('approximately','')
+                        if ' or ' in ans: # take last
+                            ans = ans.split(' or ')[-1]
+                        #print(ans)
+                        ar = float(ans.split(':')[0])/float(ans.split(':')[1])
                         jllm['aspect ratio'] = ar
 
                 # specific errors for keys that have lists
@@ -727,7 +732,18 @@ def get_lmm_gt(dfsub2, type, verbose=True):
             gt.append(list(v.values())[0].lower())
         gt = np.array(gt)
         for v in dfsub2['LMM Answer'].values:
-            lmm.append(list(v.values())[0].lower())
+            try:
+                if isinstance(v, dict):
+                    llmt = np.array(list(v.values())).astype('str').tolist()
+                else:
+                    llmt = [str(v)]  # or however you want to handle non-dict fallback
+            except:
+                llmt = list(v.values())
+            # try:
+            #     llmt = np.array(list(v.values())).astype('str').tolist()
+            # except:
+            #     llmt = list(v.values())
+            lmm.append(llmt[0].lower())
         lmm = np.array(lmm)
     elif type == 'float' or type == 'float per panel':
         gt = []; lmm = []
