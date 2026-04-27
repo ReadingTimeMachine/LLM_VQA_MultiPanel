@@ -247,6 +247,27 @@ def fix_latex_math(json_str):
     return re.sub(r'\$([^$]+)\$', r'"\$\1\$"', json_str)
 
 
+def fix_aspect(jllm):
+    ar = jllm['aspect ratio']
+    ar = ar.replace('approximately','')
+    ar = ar.replace('~','')
+    if ' or ' in ar: # take last
+        ar = ar.split(' or ')[-1]
+    if "(" in jllm['aspect ratio']:
+        #jllm['aspect ratio'] = jllm['aspect ratio'].split('(')[0]
+        #ar = jllm['aspect ratio'].split('(')[0]
+        ar = ar.split('(')[0]
+    if ':' in ar:
+        #ans = ar #jllm['aspect ratio']
+        #print(ans)
+        ar = float(ar.split(':')[0])/float(ar.split(':')[1])
+    #print(ar)
+    if not isinstance(ar,float):
+        if '/' in ar:
+            ar = float(ar.split('/')[0])/float(ar.split('/')[1]) 
+    ar = float(ar)
+    return ar
+
 def parse_json_files(dirnames, dirs, files_parsed, dir_jsons, 
                      verbose=True, use_explanation=False, ignore_please_choose=True):
     dfdict = {}
@@ -442,16 +463,18 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                 #     print('[WARNING]: gt is "titles" but return from LMM is "title", doing a sub')
                 
                 if 'aspect ratio' in jllm:
-                    if "(" in jllm['aspect ratio']:
-                        jllm['aspect ratio'] = jllm['aspect ratio'].split('(')[0]
-                    if ':' in jllm['aspect ratio']:
-                        ans = jllm['aspect ratio']
-                        ans = ans.replace('approximately','')
-                        if ' or ' in ans: # take last
-                            ans = ans.split(' or ')[-1]
-                        #print(ans)
-                        ar = float(ans.split(':')[0])/float(ans.split(':')[1])
-                        jllm['aspect ratio'] = ar
+                    ar = fix_aspect(jllm)
+                    jllm['aspect ratio'] = ar
+                    # if "(" in jllm['aspect ratio']:
+                    #     jllm['aspect ratio'] = jllm['aspect ratio'].split('(')[0]
+                    # if ':' in jllm['aspect ratio']:
+                    #     ans = jllm['aspect ratio']
+                    #     ans = ans.replace('approximately','')
+                    #     if ' or ' in ans: # take last
+                    #         ans = ans.split(' or ')[-1]
+                    #     #print(ans)
+                    #     ar = float(ans.split(':')[0])/float(ans.split(':')[1])
+                        # jllm['aspect ratio'] = ar
 
                 # specific errors for keys that have lists
                 replace_keys = []
@@ -481,14 +504,44 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                 # test for matching keys
                 for k,v in jgt.items():
                     if k not in jllm:
-                        if verbose:
-                            print('[ERROR]: missing key:', k)
-                            print('  question format:', qa['format'])
-                            print('  GT:', jgt)
-                            print('  LMM:', jllm)
-                            print('  raw LMM:', raw_ans_in.split('\n')[0])
-                            print('')
-                        jllm[k] = np.nan
+                        # try simple replacement
+                        #print('keys:', list(jllm.keys()))
+                        if len(list(jllm.keys())) > 0:
+                            # is it just a difference of an underscore?
+                            llmk = list(jllm.keys())[0]
+                            if llmk[0].replace('_',' ') == k:
+                                jllm2 = {k:jllm[llmk]}
+                                jllm = deepcopy(jllm2)
+                                if 'aspect ratio' in jllm:
+                                    jllm['aspect ratio'] = fix_aspect(jllm)
+                                if verbose:
+                                    print('[WARNING]: updated LMM key -- was "' + str(llmk) +'", assuming "' + str(k) + '"')
+                            # or a difference of adding a "value" or something?
+                            elif llmk.split('_')[0] == k.split(' ')[0]:
+                                jllm2 = {k:jllm[llmk]}
+                                jllm = deepcopy(jllm2)
+                                if 'aspect ratio' in jllm:
+                                    jllm['aspect ratio'] = fix_aspect(jllm)
+                                if verbose:
+                                    print('[WARNING]: updated LMM key -- was "' + str(llmk) +'", assuming "' + str(k) + '"')
+                            else:
+                                if verbose:
+                                    print('[ERROR]: missing key:', k)
+                                    print('  question format:', qa['format'])
+                                    print('  GT:', jgt)
+                                    print('  LMM:', jllm)
+                                    print('  raw LMM:', raw_ans_in.split('\n')[0])
+                                    print('') 
+                                jllm[k] = np.nan
+                        else:
+                            if verbose:
+                                print('[ERROR]: missing key:', k)
+                                print('  question format:', qa['format'])
+                                print('  GT:', jgt)
+                                print('  LMM:', jllm)
+                                print('  raw LMM:', raw_ans_in.split('\n')[0])
+                                print('')
+                            jllm[k] = np.nan
                         #import sys; sys.exit()
                     elif type(jllm[k]) != type(v):
                         if jllm[k] is None:
@@ -775,7 +828,9 @@ def get_lmm_gt(dfsub2, type, verbose=True):
                             print('[WARNING]: could not convert -- ', l2)
                         l = np.nan
                     #l = [l]
-                    #print('Lsub:',l)
+                #print('Lsub:',l)
+                if isinstance(l,float):
+                    l = [l]
                 lmm.extend(l)
             else:
                 lmm.append(l)
