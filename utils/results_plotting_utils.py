@@ -343,3 +343,36 @@ def make_square_grid_figure_gs(n_plots, figsize_per_plot=(3, 3),
 
     fig.tight_layout()   # now works without warnings
     return fig, axes
+
+
+def create_output_marks(df, marker_min = 15, marker_max = 65,
+    colors_levels = ['darkblue', 'orange', 'cyan', 'green', 'magenta', 'gold', 'orangered', 'purple', 'deepskyblue', 'red'], 
+    marker_styles_levels = ['s','o','^', 'D', 'X','*','h']
+    ):
+
+    marker_sizes = {}
+    marker_sizes_levels = np.round(np.linspace(marker_min, marker_max, df['model'].nunique())).astype('int')[::-1]
+    for i,m in enumerate(df['model'].unique()):
+        marker_sizes[m] = marker_sizes_levels[i]
+    # fill marker styles
+    marker_styles = {}
+    if df['model'].nunique() > len(marker_styles_levels):
+        print('Not enough markers!')
+        import sys; sys.exit()
+    for i,m in enumerate(df['model'].unique()):
+        marker_styles[m] = marker_styles_levels[i]
+    # fill colors
+    colors = {}
+    if df['model'].nunique() > len(colors_levels):
+        print('Not enough colors!')
+        import sys; sys.exit()
+    for i,m in enumerate(df['model'].unique()):
+        colors[m] = colors_levels[i]
+    # fill labels
+    labels = {}
+    labels_levels = []
+    for i,m in enumerate(df['model'].unique()):
+        if len(labels_levels) < df['model'].nunique(): # not enough labels
+            labels[m] = str(m)
+
+    return marker_sizes, marker_styles, colors, labels

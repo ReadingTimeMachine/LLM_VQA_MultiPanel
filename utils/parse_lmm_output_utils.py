@@ -832,13 +832,20 @@ def get_lmm_gt(dfsub2, type, verbose=True):
                         l = json.loads(l2)
                     except:
                         if verbose:
-                            print('[WARNING]: could not convert -- ', l2)
+                            print('[WARNING]: could not convert to float -- ', l2)
                         l = np.nan
                     #l = [l]
                 #print('Lsub:',l)
                 if isinstance(l,float):
                     l = [l]
                 lmm.extend(l)
+            elif isinstance(l,str):
+                try:
+                    l = float(l)
+                except:
+                    if verbose:
+                        print('[WARNING]: could not convert to float -- ', l)
+                    l = np.nan
             else:
                 lmm.append(l)
         #print('LMM:', lmm)
