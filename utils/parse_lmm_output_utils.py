@@ -263,7 +263,10 @@ def fix_aspect(jllm):
     if ':' in ar:
         #ans = ar #jllm['aspect ratio']
         #print(ans)
-        ar = float(ar.split(':')[0])/float(ar.split(':')[1])
+        try:
+            ar = float(ar.split(':')[0])/float(ar.split(':')[1])
+        except:
+            ar = np.nan
     #print(ar)
     if not isinstance(ar,float):
         if '/' in ar:
@@ -271,8 +274,20 @@ def fix_aspect(jllm):
     try:
         ar = float(ar)
     except:
-        print('ar could not convert:', ar, ', orig:', jllm['aspect ratio'])
-        lskjsl
+        if '-' in ar:
+            try: 
+                f1 = float(ar.split('-'))[0]
+            except:
+                f1 = None
+            try:
+                f2 = float(ar.split('-'))[-1]
+            except:
+                f2 = None
+            if f1 is not None and f2 is not None:
+                ar = f2 # take last after split
+            else:
+                print('ar could not convert:', ar, ', orig:', jllm['aspect ratio'])
+                lskjsl
     return ar
 
 def parse_json_files(dirnames, dirs, files_parsed, dir_jsons, 

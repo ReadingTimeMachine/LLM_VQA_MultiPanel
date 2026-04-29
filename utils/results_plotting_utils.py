@@ -69,12 +69,13 @@ def get_dirs_names_files(main_llm_dir, dirs_to_use,
 
 # Alternative approach using seaborn's kdeplot directly
 def add_kde_contours(ax, x_data, y_data, color, label, marker, marker_size, 
-                     levels=3, alpha=0.5, plot_kde=True):
+                     levels=3, alpha=0.5, plot_kde=True, linestyle='-'):
     """Add KDE contours directly using seaborn"""
     # Add contour lines
     if plot_kde:
         sns.kdeplot(x=x_data, y=y_data, ax=ax, color=color, 
-                fill=False, alpha=alpha, linewidths=2, levels=levels)
+                fill=False, alpha=alpha, linewidths=2, levels=levels, 
+                linestyles=linestyle)
     
     # Add scatter points
     if label is not None:
