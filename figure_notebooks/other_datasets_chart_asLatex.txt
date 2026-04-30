@@ -1,0 +1,52 @@
+\begin{table*}[t!]
+\centering
+\setlength{\tabcolsep}{2.5pt}
+\scriptsize
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|l|}
+Name & Date & Line & Bar & Sctr & Pie & Hist & Othr & BB & Data Link & MultiPanel & Citation(s) \\ 
+FigureQA & 2018 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & $\checkmark$ & -- & -- & \cite{kahou_figureqa_2018} \\
+ChartLlama & 2023 & -- & -- & $\checkmark$ & -- & -- & $\checkmark$ & -- & -- & -- & \cite{han_chartllama_2023} \\
+ChartAssistant/SFT & 2024 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & P & -- & \cite{meng_chartassistant_2024} \\
+MMCA & 2024 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & -- & -- & \cite{liu_mmc_2024} \\
+Chart2Text/to-text & 2020/22 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & P & $\checkmark$ & -- & \cite{kantharaj_chart--text_2022,obeid_chart--text_2020} \\
+Chocolate & 2024 & $\checkmark$ & $\checkmark$ & -- & -- & -- & -- & -- & $\checkmark$ & -- & \cite{huang_lvlms_2024} \\
+Leaf-qa & 2020 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & $\checkmark$ & -- & -- & \cite{chaudhry_leaf-qa_2020} \\
+ChartQA & 2022 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & $\checkmark$ & $\checkmark$ & -- & \cite{masry_chartqa_2022} \\
+ChartCheck & 2023 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & $\checkmark$ & -- & \cite{akhtar_chartcheck_2024} \\
+OpenCQA & 2022 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & $\checkmark$ & P & -- & \cite{kantharaj_opencqa_2022} \\
+MapQA & 2022 & -- & -- & -- & -- & -- & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & \cite{chang_mapqa_2022} \\
+MathVista/PaperQA & 2023 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & P & \cite{lu_mathvista_2023} \\
+SciGraphQA & 2023 & -- & -- & -- & -- & -- & $\checkmark$ & -- & -- & P & \cite{li_scigraphqa_2023} \\
+VisText & 2023 & $\checkmark$ & $\checkmark$ & -- & -- & -- & $\checkmark$ & P & $\checkmark$ & -- & \cite{tang_vistext_2023} \\
+Chart-Info & 2019--24 & $\checkmark$ & $\checkmark$ & -- & -- & -- & $\checkmark$ & $\checkmark$ & P & P & \cite{davila2022icpr,davila_chart-info_2025,davila_icdar_2019,icdar2023,icpr2020}\\
+DocVQA & 2021 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & -- & $\checkmark$ & P & \cite{mathew_docvqa_2021} \\
+ChartFC & 2023 & -- & $\checkmark$ & -- & -- & -- & -- & $\checkmark$ & $\checkmark$ & -- & \cite{akhtar_reading_2023} \\
+RealCQA & 2023 & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & -- & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & \cite{ahmed_realcqa_2023} \\
+StructChart & 2023 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & \cite{xia_structchart_2024} \\
+ChartSumm & 2023 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & -- & -- & -- & \cite{rahman_chartsumm_2023} \\
+ChartOCR & 2019 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & P & -- & -- & \cite{luo_chartocr_2021} \\
+LineEX & 2023 & $\checkmark$ & -- & -- & -- & -- & -- & $\checkmark$ & $\checkmark$ & -- & \cite{p_lineex_2023} \\
+SciCap & 2021 & -- & $\checkmark$ & $\checkmark$ & -- & -- & $\checkmark$ & -- & -- & P & \cite{hsu_scicap_2021} \\
+AutoChart & 2021 & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & -- & -- & $\checkmark$ & -- & -- & \cite{zhu_autochart_2021} \\
+Unichart & 2023 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & P & -- & -- & \cite{masry_unichart_2023} \\
+PlotQA & 2020 & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & -- & -- & $\checkmark$ & $\checkmark$ & -- & \cite{methani_plotqa_2020} \\
+MatCha & 2023 & $\checkmark$ & $\checkmark$ & -- & -- & -- & $\checkmark$ & -- & $\checkmark$ & -- & \cite{liu_matcha_2023} \\
+AI2D & 2016 & -- & -- & -- & -- & -- & $\checkmark$ & -- & -- & -- & \cite{kembhavi_diagram_2016} \\
+TQA & 2017 & -- & -- & -- & -- & -- & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & \cite{kembhavi_are_2017} \\
+% \multicolumn{12}{|l|}{\cellcolor{gray!20}\textit{Datasets published after original review (mid-2025+)}} \\
+% \\
+ChartQAPro & 2025 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & $\checkmark$ & \cite{masry_chartqapro_2025} \\
+EvoChart-QA & 2025 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & -- & \cite{huang_evochart_2025} \\
+ChartMuseum & 2025 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & P & \cite{tang_chartmuseum_2025} \\
+ChartGalaxy & 2025 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & $\checkmark$ & $\checkmark$ & \cite{li_chartgalaxy_2025} \\
+RefChartQA & 2025 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & $\checkmark$ & P & -- & \cite{vogel_refchartqa_2025} \\
+ChartDQA & 2025 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & \cite{fan_-depth_2025} \\
+ChartQA-X & 2025 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & -- & -- & -- & \cite{hegde_chartqa-x_2025} \\
+MultiChartQA-R & 2025 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & -- & $\checkmark$ & \cite{qiyuanfan_multichartqa-r_2025} \\
+mChartQABench & 2025 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & $\checkmark$ & -- & -- & -- & \cite{wei_mchartqa_2026} \\
+What Lies Beneath & 2026 & -- & -- & -- & -- & $\checkmark$ & -- & $\checkmark$ & $\checkmark$ & -- & \cite{naiman_what_2026} \\
+Chart-HQA & 2026 & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ & -- & $\checkmark$ & -- & -- & -- & \cite{chen_chart-hqa_2025} \\
+\end{tabular}
+\caption{Summary of Chart VQA datasets.  ``Sctr'', ``Hist'', and ``Othr'' refer to Scatter, Histogram, and Other chart types, respectively.  ``BB'' indicates inclusion of bounding box element annotations. ``Multi Pan.''\ indicates whether the dataset contains multi-panel figures, dashboards, or multi-chart compositions. ``P'' stands for partial inclusion. Datasets below the divider were published after the original review period (mid-2025).}
+\label{tab:chart_vqa_datasets}
+\end{table*}
