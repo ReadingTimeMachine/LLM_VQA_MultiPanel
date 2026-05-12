@@ -290,8 +290,12 @@ def fix_aspect(jllm):
                 lskjsl
     return ar
 
+
+############ MAIN PARSER ##################
+
 def parse_json_files(dirnames, dirs, files_parsed, dir_jsons, 
-                     verbose=True, use_explanation=False, ignore_please_choose=True):
+                     verbose=True, use_explanation=False, ignore_please_choose=True, 
+                     include_nans = False):
     dfdict = {}
     for flag in ['image id', 'plot number', 'plot type', 'question', 
                 'use list', 'model', 'model id', 'LMM Answer', 'GT Answer', 
@@ -477,26 +481,10 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                     print(raw_ans)
                     import sys; sys.exit()
 
-                # known issues
-                # if 'titles' in jllm:
-                #     j2 = {'title':jllm['titles']}
-                #     jllm = deepcopy(j2)
-                # if 'title' in jllm and 'titles' in list(jgt.keys):
-                #     print('[WARNING]: gt is "titles" but return from LMM is "title", doing a sub')
-                
+                # known issues with aspect ratio
                 if 'aspect ratio' in jllm:
                     ar = fix_aspect(jllm)
                     jllm['aspect ratio'] = ar
-                    # if "(" in jllm['aspect ratio']:
-                    #     jllm['aspect ratio'] = jllm['aspect ratio'].split('(')[0]
-                    # if ':' in jllm['aspect ratio']:
-                    #     ans = jllm['aspect ratio']
-                    #     ans = ans.replace('approximately','')
-                    #     if ' or ' in ans: # take last
-                    #         ans = ans.split(' or ')[-1]
-                    #     #print(ans)
-                    #     ar = float(ans.split(':')[0])/float(ans.split(':')[1])
-                        # jllm['aspect ratio'] = ar
 
                 # specific errors for keys that have lists
                 replace_keys = []
@@ -566,8 +554,10 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                             jllm[k] = np.nan
                         #import sys; sys.exit()
                     elif type(jllm[k]) != type(v):
-                        if jllm[k] is None:
+                        if jllm[k] is None and not include_nans:
                             continue
+                        elif jllm[k] is None and include_nans:
+                            jllm[k] = np.nan
                         try:
                             a = type(v)(jllm[k])
                             #print('type', type(v), 'for', jllm[k])
@@ -575,6 +565,8 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                         except:
                             try:
                                 x = np.isnan(jllm[k])
+                                if include_nans:
+                                    jllm[k] = np.nan
                             except:
                                 try:
                                     x = jllm[k].split(' ')[-1]
@@ -611,6 +603,8 @@ def parse_json_files(dirnames, dirs, files_parsed, dir_jsons,
                                             print('')
                                         if type(jllm[k]) == type(''):
                                             jllm[k] = None
+                                            if include_nans:
+                                                jllm[k] = np.nan
                                         else:
                                             laksjl
                             #import sys; sys.exit()
