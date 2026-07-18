@@ -1,6 +1,6 @@
 # Do you “see” what I “see”? A Multi-panel Visual Question and Answer Dataset for Large Language Model Chart Analysis
 
-Welcome to the repository for the paper "Do you “see” what I “see”? A Multi-panel Visual Question and Answer Dataset for Large Language Model Chart Analysis", presented at iConf 2026 (this will be updated with links when applicable).
+Welcome to the repository for the paper "Do you “see” what I “see”? A Multi-panel Visual Question and Answer Dataset for Large Language Model Chart Analysis", presented at TPDL 2026 (this will be updated with links when applicable).
 
 <!--
 <div align="center">
