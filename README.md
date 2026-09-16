@@ -118,8 +118,7 @@ queries.
 | [utils/results_plotting_utils.py](utils/results_plotting_utils.py), [utils/latex_utils.py](utils/latex_utils.py) | Accuracy calculations, KDE/grid plotting helpers, and LaTeX table formatting for the paper. |
 | [synthetic_training_figures/utils/](synthetic_training_figures/utils/) | Lower-level figure-generation library: data distributions, plot classes, text/LaTeX generation, pixel-location and metric utilities. |
 | [yt/](yt/) | Vendored parallelism utilities borrowed from [yt](https://yt-project.org/), used for the MPI-parallel figure generation. |
-| [misc/](misc/) | Bibliography helpers (pulling URLs/arXiv links out of an exported reference collection). |
-| [olds/](olds/) | Earlier exploratory notebooks on subpanel distributions and annotation rescaling, kept for reference. |
+
 
 ## Known Issues
 
