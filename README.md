@@ -14,7 +14,7 @@ Welcome to the repository for the paper "Do you “see” what I “see”? A Mu
 
  <a href="https://arxiv.org/abs/2610.14173"><img src="https://img.shields.io/badge/Paper-arXiv-red" alt="arXiv"></a>
   <a href="https://huggingface.co/datasets/ReadingTimeMachine/visual_qa_multipanel"><img src="https://img.shields.io/badge/Dataset-%F0%9F%A4%97%20Hugging_Face-yellow" alt="Hugging Face"></a>
-<a href="https://tpdl2026.ualg.pt/program/"><img src="https://img.shields.io/badge/JCDL-2025-blue" alt="TPDL 2026"></a>
+<a href="https://tpdl2026.ualg.pt/program/"><img src="https://img.shields.io/badge/TPDL-2026-blue" alt="TPDL 2026"></a>
 </div>
 
 
